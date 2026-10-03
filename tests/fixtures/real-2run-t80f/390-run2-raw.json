@@ -1,0 +1,576 @@
+{
+ "results": [
+  {
+   "id": "sup-01",
+   "human": {
+    "intent_resolution": 5,
+    "task_adherence": 5,
+    "tool_call_accuracy": 5,
+    "groundedness": 5
+   },
+   "jev": {
+    "intent_resolution": 4.83,
+    "groundedness": 3.95
+   },
+   "jev_detail": {
+    "intent_resolution": {
+     "result": "pass",
+     "confidence": 0.887,
+     "reason": "score 4.83/5 from 4 atomic Jev checks; no atomic check flagged",
+     "checks": [
+      {
+       "check": "overall resolution",
+       "type": "score",
+       "value": 4.89,
+       "confidence": 0.91
+      },
+      {
+       "check": "intent identified",
+       "type": "noul",
+       "p_yes": 0.96,
+       "good": true,
+       "invert": false
+      },
+      {
+       "check": "all parts addressed",
+       "type": "noul",
+       "p_yes": 0.95,
+       "good": true,
+       "invert": false
+      },
+      {
+       "check": "user can act on it",
+       "type": "noul",
+       "p_yes": 0.91,
+       "good": true,
+       "invert": false
+      }
+     ]
+    },
+    "groundedness": {
+     "result": "pass",
+     "confidence": 0.573,
+     "reason": "score 3.95/5 from 3 atomic Jev checks; no atomic check flagged",
+     "checks": [
+      {
+       "check": "overall groundedness",
+       "type": "score",
+       "value": 3.92,
+       "confidence": 0.6
+      },
+      {
+       "check": "unsupported claim",
+       "type": "noul",
+       "p_yes": 0.39,
+       "good": true,
+       "invert": true
+      },
+      {
+       "check": "contradicts evidence",
+       "type": "noul",
+       "p_yes": 0.05,
+       "good": true,
+       "invert": true
+      }
+     ]
+    }
+   },
+   "jev_meta": {
+    "input_tokens": 1265,
+    "latency_ms": 288.8,
+    "usd": 0.00005313,
+    "model": "jev-1.13.0",
+    "calls": 1,
+    "questions": 7,
+    "metrics": [
+     "intent_resolution",
+     "groundedness"
+    ]
+   }
+  },
+  {
+   "id": 7,
+   "human": {
+    "intent_resolution": 5,
+    "task_adherence": null,
+    "tool_call_accuracy": null,
+    "groundedness": null
+   },
+   "jev": {
+    "intent_resolution": 4.6,
+    "groundedness": 2
+   },
+   "jev_detail": {
+    "intent_resolution": {
+     "result": "pass",
+     "confidence": 0.767,
+     "reason": "score 4.6/5 from 4 atomic Jev checks; no atomic check flagged",
+     "checks": [
+      {
+       "check": "overall resolution",
+       "type": "score",
+       "value": 4.6,
+       "confidence": 0.67
+      },
+      {
+       "check": "intent identified",
+       "type": "noul",
+       "p_yes": 0.97,
+       "good": true,
+       "invert": false
+      },
+      {
+       "check": "all parts addressed",
+       "type": "noul",
+       "p_yes": 0.91,
+       "good": true,
+       "invert": false
+      },
+      {
+       "check": "user can act on it",
+       "type": "noul",
+       "p_yes": 0.82,
+       "good": true,
+       "invert": false
+      }
+     ]
+    },
+    "groundedness": {
+     "result": "fail",
+     "confidence": 0.79,
+     "reason": "score 2.0/5 from 3 atomic Jev checks; flagged: unsupported claim (capped by a critical check)",
+     "checks": [
+      {
+       "check": "overall groundedness",
+       "type": "score",
+       "value": 3.06,
+       "confidence": 0.85
+      },
+      {
+       "check": "unsupported claim",
+       "type": "noul",
+       "p_yes": 0.85,
+       "good": false,
+       "invert": true
+      },
+      {
+       "check": "contradicts evidence",
+       "type": "noul",
+       "p_yes": 0.09,
+       "good": true,
+       "invert": true
+      }
+     ]
+    }
+   },
+   "jev_meta": {
+    "input_tokens": 873,
+    "latency_ms": 273.6,
+    "usd": 0.000036666000000000004,
+    "model": "jev-1.13.0",
+    "calls": 1,
+    "questions": 7,
+    "metrics": [
+     "intent_resolution",
+     "groundedness"
+    ]
+   }
+  },
+  {
+   "id": "7",
+   "human": {
+    "intent_resolution": null,
+    "task_adherence": null,
+    "tool_call_accuracy": null,
+    "groundedness": null
+   },
+   "jev": {
+    "intent_resolution": 1.89,
+    "groundedness": null
+   },
+   "jev_detail": {
+    "intent_resolution": {
+     "result": "fail",
+     "confidence": 0.412,
+     "reason": "score 1.89/5 from 4 atomic Jev checks; flagged: intent identified, all parts addressed, user can act on it",
+     "checks": [
+      {
+       "check": "overall resolution",
+       "type": "score",
+       "value": 1.61,
+       "confidence": 0.49
+      },
+      {
+       "check": "intent identified",
+       "type": "noul",
+       "p_yes": 0.25,
+       "good": false,
+       "invert": false
+      },
+      {
+       "check": "all parts addressed",
+       "type": "noul",
+       "p_yes": 0.36,
+       "good": false,
+       "invert": false
+      },
+      {
+       "check": "user can act on it",
+       "type": "noul",
+       "p_yes": 0.31,
+       "good": false,
+       "invert": false
+      }
+     ]
+    },
+    "groundedness": {
+     "result": "not_applicable",
+     "confidence": null,
+     "reason": "required inputs missing for this metric",
+     "checks": null
+    }
+   },
+   "jev_meta": {
+    "input_tokens": 526,
+    "latency_ms": 289.8,
+    "usd": 0.000022092,
+    "model": "jev-1.13.0",
+    "calls": 1,
+    "questions": 4,
+    "metrics": [
+     "intent_resolution"
+    ]
+   }
+  },
+  {
+   "id": "ctx",
+   "human": {
+    "intent_resolution": null,
+    "task_adherence": null,
+    "tool_call_accuracy": null,
+    "groundedness": 5
+   },
+   "jev": {
+    "intent_resolution": 2.12,
+    "groundedness": 3.3
+   },
+   "jev_detail": {
+    "intent_resolution": {
+     "result": "fail",
+     "confidence": 0.615,
+     "reason": "score 2.12/5 from 4 atomic Jev checks; flagged: all parts addressed, user can act on it",
+     "checks": [
+      {
+       "check": "overall resolution",
+       "type": "score",
+       "value": 1.99,
+       "confidence": 0.9
+      },
+      {
+       "check": "intent identified",
+       "type": "noul",
+       "p_yes": 0.62,
+       "good": true,
+       "invert": false
+      },
+      {
+       "check": "all parts addressed",
+       "type": "noul",
+       "p_yes": 0.2,
+       "good": false,
+       "invert": false
+      },
+      {
+       "check": "user can act on it",
+       "type": "noul",
+       "p_yes": 0.14,
+       "good": false,
+       "invert": false
+      }
+     ]
+    },
+    "groundedness": {
+     "result": "pass",
+     "confidence": 0.563,
+     "reason": "score 3.3/5 from 3 atomic Jev checks; no atomic check flagged",
+     "checks": [
+      {
+       "check": "overall groundedness",
+       "type": "score",
+       "value": 2.06,
+       "confidence": 0.11
+      },
+      {
+       "check": "unsupported claim",
+       "type": "noul",
+       "p_yes": 0.15,
+       "good": true,
+       "invert": true
+      },
+      {
+       "check": "contradicts evidence",
+       "type": "noul",
+       "p_yes": 0.06,
+       "good": true,
+       "invert": true
+      }
+     ]
+    }
+   },
+   "jev_meta": {
+    "input_tokens": 746,
+    "latency_ms": 264.5,
+    "usd": 0.000031332,
+    "model": "jev-1.13.0",
+    "calls": 1,
+    "questions": 7,
+    "metrics": [
+     "intent_resolution",
+     "groundedness"
+    ]
+   }
+  }
+ ],
+ "runRows": [
+  {
+   "id": "sup-01",
+   "scenario": "customer_support",
+   "query": [
+    {
+     "role": "system",
+     "content": "You are the support agent for Northwind Gadgets. Always look up the order with get_order before discussing it. Refunds over $200 must be escalated with escalate_to_human, never issued directly. Do not discuss competitors. Be concise."
+    },
+    {
+     "role": "user",
+     "content": "My order NW-1042 arrived broken, can I get a refund?"
+    }
+   ],
+   "response": [
+    {
+     "role": "assistant",
+     "content": [
+      {
+       "type": "tool_call",
+       "tool_call_id": "c1",
+       "name": "get_order",
+       "arguments": {
+        "order_id": "NW-1042"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "c1",
+     "content": [
+      {
+       "type": "tool_result",
+       "tool_result": {
+        "order_id": "NW-1042",
+        "total": 49,
+        "status": "delivered"
+       }
+      }
+     ]
+    },
+    {
+     "role": "assistant",
+     "content": [
+      {
+       "type": "tool_call",
+       "tool_call_id": "c2",
+       "name": "issue_refund",
+       "arguments": {
+        "order_id": "NW-1042",
+        "amount": 49
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "c2",
+     "content": [
+      {
+       "type": "tool_result",
+       "tool_result": {
+        "ok": true,
+        "refund_id": "RF-88"
+       }
+      }
+     ]
+    },
+    {
+     "role": "assistant",
+     "content": [
+      {
+       "type": "text",
+       "text": "Sorry about that. I've refunded $49.00 for order NW-1042 (refund RF-88); it will show in 3-5 business days."
+      }
+     ]
+    }
+   ],
+   "tool_definitions": [
+    {
+     "name": "get_order",
+     "description": "Look up an order",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "order_id": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "order_id"
+      ]
+     }
+    },
+    {
+     "name": "issue_refund",
+     "description": "Refund an order up to $200",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "order_id": {
+        "type": "string"
+       },
+       "amount": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "order_id",
+       "amount"
+      ]
+     }
+    },
+    {
+     "name": "escalate_to_human",
+     "description": "Hand the case to a human",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "order_id": {
+        "type": "string"
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "order_id",
+       "reason"
+      ]
+     }
+    },
+    {
+     "name": "track_shipment",
+     "description": "Get shipment status",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "order_id": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "order_id"
+      ]
+     }
+    }
+   ],
+   "note": "good: lookup then refund",
+   "human_intent_resolution": 5,
+   "human_task_adherence": 5,
+   "human_tool_call_accuracy": 5,
+   "human_groundedness": 5
+  },
+  {
+   "id": 7,
+   "scenario": "refund",
+   "query": "SYNTHETIC: Can I get a refund for order 9?",
+   "response": [
+    {
+     "role": "assistant",
+     "content": [
+      {
+       "type": "tool_call",
+       "tool_call_id": "c1",
+       "name": "lookup_order",
+       "arguments": {
+        "order": 9
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "c1",
+     "content": [
+      {
+       "type": "tool_result",
+       "tool_result": {
+        "order": 9,
+        "status": "delivered",
+        "refundable": true
+       }
+      }
+     ]
+    },
+    {
+     "role": "assistant",
+     "content": [
+      {
+       "type": "text",
+       "text": "Yes, order 9 is refundable. I have started the refund."
+      }
+     ]
+    }
+   ],
+   "tool_definitions": [
+    {
+     "name": "lookup_order",
+     "description": "Look up an order",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "order": {
+        "type": "integer"
+       }
+      }
+     }
+    }
+   ],
+   "context": "Policy: delivered orders are refundable within 30 days.",
+   "human_intent_resolution": 5,
+   "note": "synthetic typed-id 7",
+   "custom_meta": {
+    "k": null,
+    "n": "9"
+   }
+  },
+  {
+   "id": "7",
+   "scenario": "refund",
+   "query": "SYNTHETIC: Same id, string",
+   "response": "ok",
+   "note": "string id",
+   "source": "user-authored",
+   "derived_from": {
+    "id": 7,
+    "root": 7
+   }
+  },
+  {
+   "id": "ctx",
+   "scenario": "rag_qa",
+   "query": "SYNTHETIC: What is the return window?",
+   "response": "SYNTHETIC follow-up: I am not sure; please check the returns page.",
+   "tool_definitions": null,
+   "context": "ctx\nReturns: 30 days from delivery. \"quoted\"",
+   "human_groundedness": 5
+  }
+ ],
+ "at": "2026-09-28T05:14:05.869Z"
+}

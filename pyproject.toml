@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jev-foundry-judge"
+version = "1.0.0"
+description = "Jev (TypeSafe) as the judge for Azure AI Foundry agent evaluation: drop-in custom evaluators"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+foundry = ["azure-ai-evaluation>=1.18", "azure-identity>=1.19"]
+app = ["fastapi>=0.115", "uvicorn>=0.32", "python-multipart"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

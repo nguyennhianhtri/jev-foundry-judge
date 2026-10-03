@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Jev reads each prompt and sends it to the cheapest model that can handle it. Try it with your own key and see the benchmark.">
+<meta name="theme-color" content="#0a0d12">
+<title>Jev Router: send each prompt to the right model</title>
+<link rel="stylesheet" href="/static/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='7' width='32' height='32' fill='%233563e9'/%3E%3Cpath d='M9 17l5 5 9-12' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body class="site">
+<a class="skip" href="#rt-main">Skip to content</a>
+<header class="sx-top">
+  <a class="sx-brand" href="/" aria-label="Jev home"><span class="sx-mark" aria-hidden="true"></span>Jev</a>
+  <nav class="sx-nav" aria-label="Main">
+    <a href="/" aria-current="page">Route</a><a href="/evaluate">Evaluate</a><a href="/#benchmark">Benchmark</a>
+  </nav>
+  <button class="sx-icon" id="theme" type="button" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg></button>
+</header>
+
+<main id="rt-main" class="sx-main">
+  <section class="sx-hero">
+    <h1>Send every prompt to the cheapest model that can handle it.</h1>
+    <p class="sx-lede">Jev reads the prompt and picks a model in about 300 ms. Easy questions go to a small model, and hard ones go to a strong one.</p>
+  </section>
+
+  <section class="sx-tool" aria-label="Router">
+    <label for="rt-prompt" class="sx-label">Prompt</label>
+    <textarea id="rt-prompt" rows="3" placeholder="What is the capital of Australia?"></textarea>
+    <div class="sx-examples" id="rt-examples" aria-label="Examples"></div>
+    <div class="sx-keyrow">
+      <label for="rt-key" class="sx-sr">Jev API key</label>
+      <input id="rt-key" type="password" autocomplete="off" spellcheck="false" placeholder="Jev API key">
+      <button id="rt-go" class="sx-primary" type="button">Route</button>
+    </div>
+    <p class="sx-note" id="rt-keystatus" role="status">Your key stays in this tab. It is never stored. <a href="https://typesafe.ai" rel="noopener">Get a key</a></p>
+    <p class="sx-err" id="rt-err" role="alert" hidden></p>
+    <div id="rt-out" aria-live="polite"></div>
+
+    <details class="sx-details" id="rt-settings">
+      <summary>Show details: models, policy and batch</summary>
+      <div class="sx-dgrid">
+        <div>
+          <h3>Models</h3>
+          <div id="rt-models" class="rt-models"></div>
+          <button class="sx-link" id="rt-reset" type="button">Reset models</button>
+        </div>
+        <div>
+          <h3>Policy</h3>
+          <label class="sx-field" for="rt-conf">Fall back below <output id="rt-conf-v">0.60</output> confidence
+            <input type="range" id="rt-conf" min="0" max="1" step="0.05" value="0.6"></label>
+          <label class="sx-check"><input type="checkbox" id="rt-cheap-on"> Prefer the cheapest model above <output id="rt-cheap-v">0.25</output></label>
+          <input type="range" id="rt-cheap" min="0.05" max="0.95" step="0.05" value="0.25" aria-label="Cheapest model threshold" disabled>
+          <div class="sx-tok"><label>Tokens in <input type="number" id="rt-tin" value="500" min="1"></label><label>out <input type="number" id="rt-tout" value="400" min="1"></label></div>
+          <p class="sx-note" id="rt-costrule">Cheapest means the lowest estimated cost per answer: tokens in × $ in + tokens out × $ out. Prices and token counts are your assumptions, not quotes.</p>
+          <label class="sx-check"><input type="checkbox" id="rt-batch"> One prompt per line (up to 50)</label>
+          <button class="sx-link" id="rt-sample" type="button">Load 9 mixed prompts</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="sx-bench" id="benchmark" aria-labelledby="bench-h" tabindex="-1">
+    <h2 id="bench-h">Benchmark</h2>
+    <p class="sx-lede" id="bench-lede">240 public prompts, each labelled small, strong or code. Five ways to route them.</p>
+    <div id="rt-bench-body"><p class="sx-note">Loading…</p></div>
+    <p class="sx-more">Jev also judges AI agents. See the <a href="/evaluate#bench">evaluation benchmark</a>.</p>
+  </section>
+</main>
+<footer class="sx-foot"><span>Jev by typesafe.ai · <span class="privnote">Anonymous visit counts, no cookies.</span></span><span><a href="https://github.com/nguyennhianhtri/jev-foundry-judge">Source</a> · <span id="ver"></span></span></footer>
+<script>(function(){var h=location.hash.slice(1);if(h==="bench"||h==="key")location.replace("/evaluate#"+(h==="bench"?"bench":""));})();</script>
+<script src="/static/analytics.js"></script>
+<script src="/static/router.js"></script>
+</body>
+</html>

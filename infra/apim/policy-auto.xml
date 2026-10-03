@@ -1,0 +1,123 @@
+<!-- Operation policy: POST /openai/deployments/{deployment-id}/chat/completions
+     deployment-id = "auto"  -> ask the router, then use that class's backend pool
+     deployment-id = small|strong|code -> pinned class, no router call -->
+<policies>
+  <inbound>
+    <base />
+    <set-variable name="dep" value="@(context.Request.MatchedParameters["deployment-id"])" />
+    <set-variable name="routeSource" value="pinned" />
+    <set-variable name="conf" value="" />
+    <choose>
+      <when condition="@((string)context.Variables["dep"] == "auto")">
+        <set-variable name="prompt" value="@{
+            var m = context.Request.Body.As<JObject>(preserveContent: true)["messages"] as JArray;
+            var u = m?.LastOrDefault(x => (string)x["role"] == "user");
+            var c = u?["content"];
+            if (c == null) { return ""; }
+            if (c.Type == JTokenType.String) { return (string)c; }
+            return string.Join("\n", c.Where(p => (string)p["type"] == "text").Select(p => (string)p["text"]));
+        }" />
+        <send-request mode="new" response-variable-name="r" timeout="{{router-timeout-s}}" ignore-error="true">
+          <set-url>{{router-url}}/api/router/route</set-url>
+          <set-method>POST</set-method>
+          <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+          <set-header name="x-jev-key" exists-action="override"><value>{{jev-key}}</value></set-header>
+          <set-body>@{
+              var p = (string)context.Variables["prompt"];
+              if (p.Length > 8000) { p = p.Substring(0, 8000); }
+              return new JObject(new JProperty("prompts", new JArray(p))).ToString();
+          }</set-body>
+        </send-request>
+        <!-- decision = "<class>|<source>|<confidence>" ; fail-safe to strong -->
+        <set-variable name="decision" value="@{
+            var r = context.Variables.GetValueOrDefault<IResponse>("r");
+            if (r == null) { return "strong|fallback-timeout|"; }
+            if (r.StatusCode != 200) { return "strong|fallback-http-" + r.StatusCode + "|"; }
+            try {
+              var x = r.Body.As<JObject>()["results"][0];
+              var conf = (double)x["confidence"]; var cs = conf.ToString("0.000");
+              if (conf < {{router-min-confidence}}) { return "strong|fallback-low-confidence|" + cs; }
+              var ch = (string)x["choice"];
+              if (ch != "small" && ch != "strong" && ch != "code") { return "strong|fallback-bad-choice|" + cs; }
+              return ch + "|router|" + cs;
+            } catch { return "strong|fallback-parse|"; }
+        }" />
+        <set-variable name="route" value="@(((string)context.Variables["decision"]).Split('|')[0])" />
+        <set-variable name="routeSource" value="@(((string)context.Variables["decision"]).Split('|')[1])" />
+        <set-variable name="conf" value="@(((string)context.Variables["decision"]).Split('|')[2])" />
+      </when>
+      <when condition="@(new [] {"small","strong","code"}.Contains((string)context.Variables["dep"]))">
+        <set-variable name="route" value="@((string)context.Variables["dep"])" />
+      </when>
+      <otherwise>
+        <return-response>
+          <set-status code="404" reason="Unknown deployment" />
+          <set-body>{"error":{"code":"DeploymentNotFound","message":"Use auto, small, strong or code."}}</set-body>
+        </return-response>
+      </otherwise>
+    </choose>
+    <!-- Consumption tier: llm-token-limit is not allowed (ValidationError "Policy is not allowed in 'Consumption' sku").
+         rate-limit-by-key is also refused on Consumption, so the per-subscription cap is the plain rate-limit policy; see policy-token-limit.v2.xml for the Basic v2/Standard v2 token budget. -->
+    <rate-limit calls="{{calls-per-minute}}" renewal-period="60" />
+    <!-- Class pool: primary deployment with circuit breaker, strong as priority-2 failover. -->
+    <set-backend-service backend-id="@("pool-" + (string)context.Variables["route"])" />
+    <choose>
+      <!-- gpt-5.3-codex serves only the Responses API: translate chat-completions -> /openai/v1/responses and back (outbound). -->
+      <when condition="@((string)context.Variables["route"] == "code")">
+        <set-body>@{
+            var b = context.Request.Body.As<JObject>(preserveContent: true);
+            var input = new JArray();
+            foreach (var m in (JArray)b["messages"]) {
+              var role = (string)m["role"]; if (role == "system") { role = "developer"; }
+              input.Add(new JObject(new JProperty("role", role), new JProperty("content", m["content"])));
+            }
+            var o = new JObject(new JProperty("model", "{{code-deployment}}"), new JProperty("input", input));
+            var mx = b["max_completion_tokens"] ?? b["max_tokens"]; if (mx != null) { o["max_output_tokens"] = mx; }
+            return o.ToString();
+        }</set-body>
+        <rewrite-uri template="/responses" copy-unmatched-params="false" />
+        <set-query-parameter name="api-version" exists-action="override"><value>preview</value></set-query-parameter>
+      </when>
+      <otherwise>
+        <rewrite-uri template="/chat/completions" copy-unmatched-params="true" />
+      </otherwise>
+    </choose>
+    <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
+    <llm-emit-token-metric namespace="jev-apim-router">
+      <dimension name="routed-model" value="@((string)context.Variables["route"])" />
+      <dimension name="route-source" value="@((string)context.Variables["routeSource"])" />
+      <dimension name="Subscription ID" />
+      <dimension name="API ID" />
+    </llm-emit-token-metric>
+  </inbound>
+  <backend>
+    <forward-request buffer-request-body="true" />
+  </backend>
+  <outbound>
+    <base />
+    <choose>
+      <when condition="@((string)context.Variables["route"] == "code" &amp;&amp; context.Response.StatusCode == 200)">
+        <set-body>@{
+            var r = context.Response.Body.As<JObject>();
+            var text = string.Join("", r["output"].Where(x => (string)x["type"] == "message")
+                .SelectMany(x => x["content"]).Where(c => (string)c["type"] == "output_text").Select(c => (string)c["text"]));
+            var u = r["usage"];
+            return new JObject(
+              new JProperty("id", r["id"]), new JProperty("object", "chat.completion"), new JProperty("model", r["model"]),
+              new JProperty("choices", new JArray(new JObject(new JProperty("index", 0),
+                  new JProperty("message", new JObject(new JProperty("role", "assistant"), new JProperty("content", text))),
+                  new JProperty("finish_reason", (string)r["status"] == "completed" ? "stop" : "length")))),
+              new JProperty("usage", new JObject(new JProperty("prompt_tokens", u["input_tokens"]),
+                  new JProperty("completion_tokens", u["output_tokens"]), new JProperty("total_tokens", u["total_tokens"])))).ToString();
+        }</set-body>
+      </when>
+    </choose>
+    <set-header name="x-routed-model" exists-action="override"><value>@((string)context.Variables["route"])</value></set-header>
+    <set-header name="x-route-source" exists-action="override"><value>@((string)context.Variables["routeSource"])</value></set-header>
+    <set-header name="x-route-confidence" exists-action="override"><value>@((string)context.Variables["conf"])</value></set-header>
+  </outbound>
+  <on-error>
+    <base />
+    <set-header name="x-routed-model" exists-action="override"><value>@(context.Variables.GetValueOrDefault<string>("route", ""))</value></set-header>
+  </on-error>
+</policies>

@@ -1,0 +1,9 @@
+{
+ "n": 240,
+ "per_class": {
+  "strong": 80,
+  "code": 80,
+  "small": 80
+ },
+ "sha256": "7e99de1e3d60a3ff03381782d9b61ab376fd3735db3d50843962a19d478498d0"
+}

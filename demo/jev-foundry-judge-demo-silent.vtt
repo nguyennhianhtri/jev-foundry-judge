@@ -1,0 +1,46 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.000
+Jev Foundry Judge: Jev as the judge for Azure AI Foundry agent evaluation
+
+00:00:04.000 --> 00:00:10.600
+Step 1 · Bring your own Jev key. It stays in this browser tab and is never stored
+
+00:00:10.600 --> 00:00:15.500
+Step 2 · Start from a synthetic scenario: a support agent with tool calls
+
+00:00:15.500 --> 00:00:20.400
+Or bring your own traces. The format guide lists the fields each metric needs
+
+00:00:20.400 --> 00:00:24.300
+Download the starter template, then upload it: preview first, nothing changes yet
+
+00:00:24.300 --> 00:00:30.700
+The inspector shows the exact case Apply will add: request, answer, tool definitions
+
+00:00:30.700 --> 00:00:35.200
+9 cases, each with the author's 1–5 labels per metric
+
+00:00:35.200 --> 00:00:41.100
+Step 3 · Run Jev next to Foundry's built-in LLM judge, all four metrics
+
+00:00:41.100 --> 00:00:49.025
+One Jev call per conversation answers every metric. Both judges run in one Foundry evaluate() call
+
+00:00:49.025 --> 00:00:52.825
+Step 4 · Dashboard: every number comes from the calls just made on this run
+
+00:00:52.825 --> 00:00:57.525
+Cost and time on the same workload: only rows where both judges scored the same metrics
+
+00:00:57.525 --> 00:01:03.425
+Agreement with the labels, per metric, with its own n. Synthetic author labels, not a general claim
+
+00:01:03.425 --> 00:01:10.625
+Step 5 · Export results, the evaluated dataset and a benchmark brief
+
+00:01:10.625 --> 00:01:14.125
+Then run the same evaluator classes in your own Foundry project
+
+00:01:14.125 --> 00:01:17.158
+Jev Foundry Judge · bring your own key · MIT licensed

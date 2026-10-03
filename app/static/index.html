@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Score Azure AI Foundry agent conversations with Jev. Four drop-in evaluators, one call per conversation, and a benchmark against human labels.">
+<meta name="theme-color" content="#0d1117">
+<title>Evaluate AI agents with Jev</title>
+<link rel="stylesheet" href="/static/styles.css">
+<link rel="stylesheet" href="/static/evaluate.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='7' width='32' height='32' fill='%235b8cff'/%3E%3Cpath d='M9 17l5 5 9-12' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="top ev-top">
+  <a class="ev-brand" href="/" aria-label="Jev home"><span class="ev-mark" aria-hidden="true"></span>Jev</a>
+  <nav class="secnav ev-nav" id="secnav" aria-label="Main">
+    <a href="/">Route</a>
+    <a href="/evaluate" data-sec="key" class="on" aria-current="page">Evaluate</a>
+    <a href="/#benchmark">Benchmark</a>
+  </nav>
+  <div class="right">
+    <button class="ghost ev-icon" id="theme" title="Switch light or dark theme" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg></button>
+  </div>
+</header>
+
+<main>
+<nav class="steps" id="steps" aria-label="Evaluation steps">
+  <button data-step="key" class="on">1 · Key</button>
+  <button data-step="data">2 · Dataset</button>
+  <button data-step="run">3 · Run</button>
+  <button data-step="dash">4 · Dashboard</button>
+  <button data-step="export">5 · Export</button>
+</nav>
+<!-- KEY -->
+<section id="s-key" class="panel on">
+  <div class="hero">
+    <h1>Evaluate AI agents in milliseconds.</h1>
+    <p class="lede">Four Azure AI Foundry evaluators, one Jev call per conversation. You see which check failed.</p>
+    <div class="card keycard" id="keycard">
+      <label for="key">Jev API key</label>
+      <div class="row">
+        <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your key">
+        <button id="verify" class="primary">Connect</button>
+      </div>
+      <p class="hint" id="keystatus">Your key stays in this tab. It is never stored or logged.</p>
+    </div>
+        <figure class="card verdict" id="heroVerdict" aria-label="Example verdict from the published benchmark">
+      <figcaption>Example from the benchmark · Task Adherence</figcaption>
+      <p class="vq"><b>User:</b> Where is my order NW-3301?</p>
+      <p class="vq"><b>Agent:</b> Your order NW-3301 shipped yesterday and will arrive tomorrow. <span class="hint nw">(no get_order lookup)</span></p>
+      <div class="vscore"><span class="pill p-bad">Fail · 2.0 / 5</span> <span class="hint">Human label: 1 (fail) · LLM judge: 1 (fail)</span></div>
+      <p class="hint vlab">Jev's checks, with the probability of “yes”</p>
+      <ul class="vchecks">
+        <li class="x">Broke a system rule <span class="hint">p = 0.86</span></li>
+        <li class="x">Asserted unverified specifics <span class="hint">p = 0.90</span></li>
+        <li class="x">Required steps done <span class="hint">p = 0.07</span></li>
+        <li class="v">Went out of scope <span class="hint">p = 0.19</span></li>
+      </ul>
+    </figure>
+    <div class="herostats" id="heroStats" aria-label="Published benchmark headline"></div>
+  </div>
+  <p class="ev-facts">Same inputs and outputs as the Foundry built-ins, so it drops into <code>evaluate()</code>. Latency and cost come from each live response.</p>
+</section>
+
+<!-- DATA -->
+<section id="s-data" class="panel">
+  <div class="bar">
+    <div>
+      <h2>Dataset <span class="count" id="count">0 rows</span></h2>
+      <p class="sub">Add your own case with the form (simple cases can be corrected later with <b>Edit</b>), load a synthetic scenario, or upload traces (JSONL/CSV; use upload or ✎ JSON edit for rich tool traces). Human labels are 1–5.</p>
+    </div>
+    <div class="actions">
+      <label class="sampl" for="sample">Synthetic scenario <select id="sample" aria-describedby="sprevsum"></select></label>
+      <button id="loadSample">Add scenario</button>
+      <button id="addCase" class="primary" title="Type one real example: request, answer, optional context and labels">+ Add case</button>
+      <label class="btn">Upload JSONL / CSV<input type="file" id="upload" accept=".jsonl,.json,.csv" hidden></label>
+      <button id="genBtn" title="Create labelled defect variants of the selected rows">Generate cases ▾</button>
+      <button id="clearBtn" class="ghost">Clear</button>
+    </div>
+  </div>
+  <section class="card imprev" id="imprev" tabindex="-1" aria-label="Import preview" hidden></section>
+  <p class="hint" id="impdone" role="status"></p>
+  <details class="card sprev" id="sprev" hidden><summary id="sprevsum"></summary><div id="sprevbody"></div></details>
+  <details class="card sprev fmtguide" id="fmtguide"><summary>Upload file format + starter template <span class="sprevadd">One case per line or row.</span></summary>
+    <ul class="fmtlist">
+      <li><b>Needed per case:</b> <code>query</code> (the user request; <code>input</code>, <code>question</code> or <code>messages</code> also work) and <code>response</code> (the agent's answer; <code>output</code> or <code>answer</code> also work). Give each case a unique <code>id</code>; a missing, empty or 0 id gets a generated one starting with <code>row-</code>.</li>
+      <li><b>Optional:</b> <code>context</code> (grounding text; needed for Groundedness unless the answer has a tool result), <code>tool_definitions</code> or <code>tool_calls</code> (one is needed for Tool Call Accuracy unless the answer has tool calls), <code>scenario</code>, <code>note</code>. The request and answer may be plain text or a Foundry / OpenAI message list; in a CSV, put JSON inside the cell.</li>
+      <li><b>Human labels (optional):</b> whole numbers 1–5 in <code>human_intent_resolution</code>, <code>human_task_adherence</code>, <code>human_tool_call_accuracy</code>, <code>human_groundedness</code> (or <code>&lt;metric&gt;_label</code>). Blank means no label, never 0. Other non-blank columns are kept as they are.</li>
+    </ul>
+    <p class="actions"><button type="button" id="tplJ">Download template (.jsonl)</button> <button type="button" id="tplC">Download template (.csv)</button></p>
+    <p class="hint">One <span class="tag">synthetic</span> example case. Local file, no key or data.</p>
+  </details>
+  <p class="nextstep" id="dataNext" hidden><button type="button" class="primary" id="goRun">Next: Run step →</button> <span class="hint" id="dataNextNote"></span></p>
+  <p class="stale" id="staleData" role="status" hidden></p>
+  <details class="card coverage" id="coverage" hidden></details>
+  <div class="card labelq" id="labelq" hidden role="status" aria-live="polite"></div>
+  <div class="card chklist" id="chklist" hidden></div>
+  <div class="card chklist ocview" id="ocview" hidden></div>
+  <div class="card chklist hoview" id="hoview" hidden></div>
+  <div class="card chklist hiview" id="hiview" hidden></div>
+  <div class="genmenu card" id="genmenu" hidden>
+    <b>Generate labelled regression cases from selected rows</b>
+    <p class="hint">Deterministic mutations in code (no model): each injects one known defect and sets the expected label.</p>
+    <div id="genkinds"></div>
+    <button class="primary" id="genGo">Generate</button>
+  </div>
+  <div class="dfindbar" id="dfindbar" role="search">
+    <label for="dfind" class="hint dfindlab">Find a case</label>
+    <input type="search" id="dfind" placeholder="ID, request or answer text" autocomplete="off" spellcheck="false" aria-describedby="dfindStatus dfindNote">
+    <button type="button" class="ghost" id="dfindClear" hidden>Clear search</button>
+    <span class="hint" id="dfindStatus" role="status" aria-live="polite"></span>
+    <p class="hint dfindnote" id="dfindNote" hidden>View only — the dataset, runs and exports are unchanged.</p>
+  </div>
+  <div class="selbar" id="selbar" hidden>
+    <span class="hint" id="selStatus" role="status" aria-live="polite"></span>
+    <span class="selacts"><button type="button" id="exSelJ" aria-describedby="selStatus selNote">Export selected (.jsonl)</button> <button type="button" id="exSelC" aria-describedby="selStatus selNote">Export selected (.csv)</button> <button type="button" class="ghost" id="selClear">Clear selection</button></span>
+    <p class="hint selnote" id="selNote">Only ticked cases are exported. Run still uses all cases unless you pick Selected cases only.</p>
+  </div>
+  <div class="tablewrap">
+    <table id="dtable">
+      <thead><tr><th><input type="checkbox" id="selall" aria-label="Select all shown cases"></th><th>ID</th><th>Scenario</th><th>User request</th><th>Agent (final answer)</th><th>Tools</th>
+        <th title="Human label: Intent Resolution">Intent</th><th title="Human label: Task Adherence">Task</th><th title="Human label: Tool Call Accuracy">Tools</th><th title="Human label: Groundedness">Grounded</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="empty" id="dempty">No rows yet. Start above: add a sample scenario, type a case or upload traces.</div>
+  </div>
+  <details class="card advrev" id="advrev">
+    <summary><b>Advanced review</b> <span class="hint">· reviewer file tools</span> <span class="advon" id="advActive" hidden></span></summary>
+    <p class="hint advsub">Open .json files another reviewer exported. Read-only; nothing is applied.</p>
+    <div class="actions">
+        <label class="btn" title="Open a label-changes .json from this app as a review checklist. Nothing is applied or uploaded.">Review label-changes file<input type="file" id="chkfile" accept=".json,application/json" hidden></label>
+        <label class="btn" title="Open a checklist-outcome .json (from this app) read-only, to see what an earlier reviewer says they did next to the current dataset. Nothing is applied, changed or uploaded.">Inspect checklist outcome<input type="file" id="ocfile" accept=".json,application/json" hidden></label>
+        <label class="btn" title="Open a changed-traces comparison + decisions .json read-only, re-check it against this dataset, and label the cases another reviewer marked needs re-label. Nothing is applied or uploaded.">Re-label from comparison<input type="file" id="hofile" accept=".json,application/json" hidden></label>
+        <label class="btn" title="Open a re-label handoff outcome .json (from this app) read-only, to see which re-labels the other reviewer says they saved, next to the labels and traces in your current dataset. Nothing is applied, changed or uploaded.">Inspect handoff outcome<input type="file" id="hifile" accept=".json,application/json" hidden></label>
+    </div>
+  </details>
+</section>
+
+<!-- RUN -->
+<section id="s-run" class="panel">
+  <h2>Run evaluation</h2>
+  <div class="card runcard">
+    <div class="opts">
+      <div><b>Metrics</b><div id="metricOpts"></div></div>
+      <div><b>Judges</b>
+        <label class="chk"><input type="checkbox" checked disabled> Jev (your key)</label>
+        <label class="chk" id="blwrap"><input type="checkbox" id="useBaseline"> <span id="bllabel">Foundry built-in LLM judge</span></label>
+        <label class="chk" id="fndwrap" hidden><input type="checkbox" id="useFoundry" checked> Log run to Foundry project <span class="hint" id="fndlabel"></span></label>
+      </div>
+      <fieldset class="rscope" id="rscope"><legend><b>Cases to run</b></legend>
+        <label class="chk"><input type="radio" name="rscope" id="rsAll" value="all" checked> All cases</label>
+        <label class="chk"><input type="radio" name="rscope" id="rsSel" value="selected" aria-describedby="rsSelNote"> Selected cases only</label>
+        <span class="hint" id="rsSelNote">Uses the cases ticked on the Dataset step.</span>
+      </fieldset>
+      <div><b>Pass threshold</b><input id="threshold" type="number" min="1" max="5" step="0.5" value="3"></div>
+    </div>
+    <p class="nextstep" id="runNext"></p>
+    <div class="runscope" id="runScope" role="status" aria-live="polite"></div>
+    <details class="mguide" id="mguide" hidden><summary>What these metrics check</summary><div id="mguideBody"></div></details>
+    <div class="row">
+      <button class="primary big" id="runBtn"><span class="rlbl">Run on <span id="runN">0</span><span id="runWhat"></span> rows</span></button>
+      <span class="hint" id="runEst"></span>
+    </div>
+    <div class="progress"><div id="prog"></div></div>
+    <details class="logwrap" id="logwrap"><summary>Show details</summary><pre class="log" id="log"></pre></details>
+    <div class="row" id="studioRow" hidden><a id="studioLink2" class="button primary" target="_blank" rel="noopener noreferrer">Open this run in the Foundry portal ↗</a></div>
+  </div>
+</section>
+
+<!-- DASH -->
+<section id="s-dash" class="panel">
+  <div class="bar"><h2>Dashboard</h2><span class="hint" id="dashNote"></span><a id="studioLink" class="button primary" target="_blank" rel="noopener noreferrer" hidden>Open in Foundry portal ↗</a></div>
+  <p class="stale" id="staleDash" role="status" hidden></p>
+  <div class="kpis" id="kpis"></div>
+  <div id="dashCharts"></div>
+  <div class="card" id="cmpCard" hidden><h3>Cost and time on the same workload <span class="hint">built from this run's raw results</span></h3><div id="cmp"></div></div>
+  <details class="card advdrawer disc" id="dashResults" open>
+    <summary><h3>Results by row</h3> <span class="hint">click a row or a flagged score to inspect it</span></summary>
+    <details class="disc sub" id="dashTools"><summary>Filter, search and review downloads</summary>
+    <div class="rfilter" id="rfilter">
+      <label>Show <select id="fView"><option value="all">All results</option><option value="jev_vs_human">Jev vs human pass/fail disagreements</option><option value="jev_vs_llm">Jev vs LLM judge disagreements</option><option value="pairs">Original vs variant pairs</option></select></label>
+      <label>Metric <select id="fMetric"></select></label>
+      <label id="fOrderWrap">Order <select id="fOrder"><option value="run">Run order</option><option value="slowest">Slowest Jev call first</option></select></label>
+      <button id="exPairs" hidden title="Includes trace text">Download pair comparison (.json)</button>
+      <button id="exReview" hidden title="Includes trace text">Download disagreement review (.json)</button>
+    </div>
+    <div class="dfindbar rfindbar" id="rfindbar" role="search" hidden>
+      <label for="rfind" class="hint dfindlab">Search this run</label>
+      <input type="search" id="rfind" placeholder="Case ID, request or answer text" autocomplete="off" spellcheck="false" aria-describedby="rfindStatus rfindNote">
+      <button type="button" class="ghost" id="rfindClear" hidden>Clear search</button>
+      <span class="hint" id="rfindStatus" role="status" aria-live="polite"></span>
+      <div class="rfx" id="rfx" hidden></div>
+      <p class="hint" id="rfxLive" role="status" aria-live="polite"></p>
+      <p class="hint dfindnote" id="rfindNote" hidden>View only — metrics, exports and your selection are unchanged. Enter opens the first match; Esc clears.</p>
+    </div>
+    <div class="hint" id="exPairsNote" hidden>Includes trace text of the paired rows. Local file only.</div>
+    <div class="hint" id="exReviewNote" hidden>Includes trace text of the listed rows. Local file only.</div>
+    </details>
+    <div class="failbar" id="failBar" hidden></div>
+    <p class="hint" id="failExportLive" role="status" aria-live="polite"></p>
+    <p class="srl" id="failNavLive" role="status" aria-live="polite"></p>
+    <div class="slowbar" id="slowBar" hidden></div>
+    <div class="hint" id="fNote"></div>
+    <div class="disbar" id="disBar" hidden></div>
+    <div class="tablewrap"><table id="rtable"><thead></thead><tbody></tbody></table></div>
+  </details>
+  <div class="card" id="detail" hidden></div>
+  <details class="card advdrawer" id="dashAdv">
+    <summary><b>Advanced</b> <span class="hint">per-metric means, agreement table and score distribution</span></summary>
+    <div class="grid2">
+      <div class="card"><h3>Per-metric scores</h3><div id="metricBars"></div></div>
+      <div class="card"><h3>Agreement with human labels <span class="hint">pass/fail @ threshold · MAE on 1–5</span></h3><div id="agree" class="scrollx"></div></div>
+    </div>
+    <div class="card" id="distCard" hidden><h3>Jev score distribution <span class="hint">recorded Jev scores only, this run</span></h3><div id="dist"></div></div>
+  </details>
+</section>
+
+<!-- EXPORT -->
+<section id="s-export" class="panel">
+  <h2>Export</h2>
+  <p class="exline" id="exline">
+    <span class="exgrp"><b>Dataset</b> <button id="exDataJ">JSONL</button> <button id="exDataC">CSV</button></span>
+    <span class="exgrp"><b>Results</b> <button id="exResJ">JSONL</button> <button id="exResC">CSV</button></span>
+    <span class="exgrp"><b>Summary</b> <button id="exSum">JSON</button></span>
+  </p>
+  <p class="hint" id="exSelHint">Current dataset and the full last run. All files save locally; none include your key. For some cases only, use Export selected on the Dataset step.</p>
+  <details class="card advdrawer" id="advExport">
+    <summary><b>Advanced</b> <span class="hint">· reproducibility, benchmark package, brief and reviewer file tools</span></summary>
+  <div class="card" id="evalCard">
+    <b>Evaluated dataset (last completed run)</b>
+    <p class="hint">Exact rows sent at run start, to reproduce the run. <b class="err">Contains case text and tool data.</b></p>
+    <div class="row"><button id="exEvalJ" class="primary">Download evaluated dataset (.jsonl)</button> <span class="hint" id="evalNote"></span></div>
+  </div>
+  <div class="card" id="pkgCard">
+    <b>Benchmark package (last completed run)</b>
+    <p class="hint">Dataset, results, summary and brief of one run in a single JSON. <b class="err">Contains case text and tool data</b>; not an anonymised or public copy.</p>
+    <div class="row"><button id="exPkg" class="primary">Download benchmark package (.json)</button> <span class="hint" id="pkgNote"></span></div>
+  </div>
+  <div class="card" id="pkgOpenCard">
+    <b>Open benchmark package</b>
+    <p class="hint">Check a package from this app, read-only, beside your own run.</p>
+    <div class="row"><label class="btn" id="pkgOpenBtn">Open benchmark package (.json)<input type="file" id="pkgfile" accept=".json,application/json" hidden></label></div>
+  </div>
+  <div class="card pkgview" id="pkgView" hidden aria-live="polite"></div>
+  <div class="card" id="briefCard">
+    <b>Benchmark brief</b>
+    <p class="hint">Markdown write-up of the last run. No trace text or keys.</p>
+    <div class="row"><button id="exBrief" class="primary">Download benchmark brief (.md)</button> <span class="hint" id="briefNote"></span></div>
+    <details id="briefPrev"><summary>Preview the brief</summary><pre class="code" id="briefText"></pre></details>
+  </div>
+  </details>
+  <div class="card">
+    <h3>Run the same evaluators in Azure AI Foundry</h3>
+    <p class="hint">The evaluators are plain callables, so <code>azure.ai.evaluation.evaluate()</code> runs them locally next to the built-ins and can log the run to your Foundry project.</p>
+    <pre class="code" id="snippet"></pre>
+    <button id="copySnip">Copy</button>
+  </div>
+</section>
+
+<!-- ROUTE -->
+<section id="s-route" class="panel">
+  <div class="sechead"><h2>Route</h2><p class="lede">The model router is now the home page.</p></div>
+  <div class="card routecard" id="routeCard"><p class="hint" id="routeStatus" role="status"></p>
+    <p class="row"><a class="button primary" id="routeOpen" href="/">Open the router</a></p></div>
+</section>
+
+<!-- BENCHMARK -->
+<section id="s-bench" class="panel">
+  <div class="sechead"><h2>Jev vs the Foundry LLM judge</h2>
+  <p class="lede" id="benchMeta">Published run on labelled agent conversations, both judges called live through this app.</p></div>
+  <div id="benchHead"></div>
+  <div id="benchCharts"><p class="hint">Loading the published benchmark…</p></div>
+  <details class="ev-method"><summary>Method</summary><p class="hint">47 synthetic agent conversations with human labels: 21 hand-written across 3 scenarios and 26 generated defect cases. Latency and cost come from each live response, and cost is estimated at list price.</p></details>
+</section>
+</main>
+<footer class="ev-foot"><span>Sample data is fictional. · <span class="privnote">Anonymous visit counts, no cookies.</span></span><span><a href="https://github.com/nguyennhianhtri/jev-foundry-judge">Source</a> · <span class="ver" id="ver"></span></span></footer>
+<script src="/static/analytics.js"></script>
+<script src="/static/review_packet.js"></script>
+<script src="/static/case_form.js"></script>
+<script src="/static/case_find.js"></script>
+<script src="/static/pair_compare.js"></script>
+<script src="/static/pair_packet.js"></script>
+<script src="/static/label_coverage.js"></script>
+<script src="/static/bench_compare.js"></script>
+<script src="/static/bench_brief.js"></script>
+<script src="/static/evaluated_dataset.js"></script>
+<script src="/static/bench_package.js"></script>
+<script src="/static/bench_package_open.js"></script>
+<script src="/static/run_compare.js"></script>
+<script src="/static/run_compare_brief.js"></script>
+<script src="/static/handoff_summary.js"></script>
+<script src="/static/run_scope.js"></script>
+<script src="/static/metric_guide.js"></script>
+<script src="/static/sample_preview.js"></script>
+<script src="/static/import_preview.js"></script>
+<script src="/static/dataset_template.js"></script>
+<script src="/static/selected_export.js"></script>
+<script src="/static/run_subset.js"></script>
+<script src="/static/score_dist.js"></script>
+<script src="/static/case_list_export.js"></script>
+<script src="/static/run_find_export.js"></script>
+<script src="/static/latency_order.js"></script>
+<script src="/static/slow_cases.js"></script>
+<script src="/static/slow_prepare.js"></script>
+<script src="/static/failed_cases.js"></script>
+<script src="/static/charts.js"></script>
+<script src="/static/app.js"></script>
+<script src="/static/shell.js"></script>
+</body>
+</html>

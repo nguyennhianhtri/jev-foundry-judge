@@ -1,0 +1,2 @@
+<!-- Drop-in for v2 tiers (Basic v2 / Standard v2): replace the rate-limit-by-key line in policy-auto.xml with this. -->
+    <llm-token-limit counter-key="@(context.Subscription.Id)" tokens-per-minute="{{tpm-per-subscription}}" estimate-prompt-tokens="false" remaining-tokens-header-name="x-remaining-tokens" />

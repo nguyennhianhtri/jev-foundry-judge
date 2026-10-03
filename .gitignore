@@ -1,0 +1,14 @@
+.env
+*.key
+.venv*/
+__pycache__/
+.pytest_cache/
+.version
+workspace/
+STREAM*.md
+.pubwork/
+
+# internal agent state
+workspace/
+STREAM*.md
+.worktrees/

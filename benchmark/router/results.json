@@ -1,0 +1,266 @@
+{
+ "version": "router-bench-1",
+ "run_at": "2026-09-29 10:39:02 +08",
+ "run_from": "Singapore, 8 concurrent requests per router",
+ "summary": "On 240 frozen public prompts (80 per route), Jev Choice routed 86% correctly (macro-F1 0.85) vs 80% for a gpt-5.4-mini LLM router and 53% for embedding similarity; Jev's p50 routing latency was 279 ms vs 1483 ms, at $0.023 vs $0.475 per 1k routes. Always-strong is 33% by construction (it gets every strong label and nothing else). With the page's default policy (confidence < 0.6 \u2192 strong, set before the run) Jev reaches 94% and sends 7% of hard prompts to the small model (vs 20% raw), still saving an estimated 37% vs always-strong. Jev's main miss: GSM8K/MMLU prompts routed to small (32 of 80 strong).",
+ "classes": [
+  "small",
+  "strong",
+  "code"
+ ],
+ "assumed_tokens": {
+  "in": 500,
+  "out": 400
+ },
+ "dataset": {
+  "n": 240,
+  "per_class": {
+   "small": 80,
+   "strong": 80,
+   "code": 80
+  },
+  "sha256": "7e99de1e3d60a3ff03381782d9b61ab376fd3735db3d50843962a19d478498d0",
+  "description": "Public prompts, labels frozen by a task-type rubric before any router ran: small = Dolly-15k open QA/classification/brainstorming/summarisation/creative/general QA; strong = GSM8K + MMLU (college maths, college physics, professional law, formal logic, abstract algebra); code = HumanEval + MBPP"
+ },
+ "routers": [
+  {
+   "key": "jev",
+   "label": "Jev Choice (jev-1.13)",
+   "accuracy": 0.8583333333333333,
+   "macro_f1": 0.8531713900134953,
+   "confusion": {
+    "small": {
+     "small": 78,
+     "strong": 2,
+     "code": 0
+    },
+    "strong": {
+     "small": 32,
+     "strong": 48,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 0,
+     "code": 80
+    }
+   },
+   "quality_risk": 0.2,
+   "saving_vs_strong": 0.4560344827586207,
+   "latency_p50_ms": 278.9,
+   "latency_p95_ms": 320.3,
+   "usd_per_1k_routes": 0.0231665,
+   "calibration": [
+    {
+     "bin": "0.00\u20130.50",
+     "n": 0,
+     "mean_p": null,
+     "acc": null
+    },
+    {
+     "bin": "0.50\u20130.80",
+     "n": 61,
+     "mean_p": 0.6422950819672131,
+     "acc": 0.5901639344262295
+    },
+    {
+     "bin": "0.80\u20130.95",
+     "n": 18,
+     "mean_p": 0.8766666666666666,
+     "acc": 0.7222222222222222
+    },
+    {
+     "bin": "0.95\u20131.00",
+     "n": 161,
+     "mean_p": 0.9931677018633541,
+     "acc": 0.9751552795031055
+    }
+   ],
+   "p_ge_0_8": {
+    "n": 179,
+    "acc": 0.9497206703910615
+   }
+  },
+  {
+   "key": "jev_pol",
+   "label": "Jev + policy (conf<0.6 \u2192 strong)",
+   "accuracy": 0.9416666666666667,
+   "macro_f1": 0.9415204678362574,
+   "confusion": {
+    "small": {
+     "small": 77,
+     "strong": 3,
+     "code": 0
+    },
+    "strong": {
+     "small": 11,
+     "strong": 69,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 0,
+     "code": 80
+    }
+   },
+   "quality_risk": 0.06875,
+   "saving_vs_strong": 0.3719540229885058,
+   "latency_p50_ms": 278.9,
+   "latency_p95_ms": 320.3,
+   "usd_per_1k_routes": 0.0231665
+  },
+  {
+   "key": "llm",
+   "label": "LLM router (gpt-5.4-mini, low reasoning)",
+   "accuracy": 0.8041666666666667,
+   "macro_f1": 0.7873453517143867,
+   "confusion": {
+    "small": {
+     "small": 79,
+     "strong": 1,
+     "code": 0
+    },
+    "strong": {
+     "small": 46,
+     "strong": 34,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 0,
+     "code": 80
+    }
+   },
+   "quality_risk": 0.2875,
+   "saving_vs_strong": 0.5133620689655172,
+   "latency_p50_ms": 1483.0,
+   "latency_p95_ms": 2008.1,
+   "usd_per_1k_routes": 0.475215625,
+   "calibration": [
+    {
+     "bin": "0.00\u20130.50",
+     "n": 0,
+     "mean_p": null,
+     "acc": null
+    },
+    {
+     "bin": "0.50\u20130.80",
+     "n": 1,
+     "mean_p": 0.78,
+     "acc": 1.0
+    },
+    {
+     "bin": "0.80\u20130.95",
+     "n": 91,
+     "mean_p": 0.9064835164835164,
+     "acc": 0.7252747252747253
+    },
+    {
+     "bin": "0.95\u20131.00",
+     "n": 147,
+     "mean_p": 0.9628571428571429,
+     "acc": 0.8503401360544217
+    }
+   ],
+   "p_ge_0_8": {
+    "n": 238,
+    "acc": 0.8025210084033614
+   }
+  },
+  {
+   "key": "embed",
+   "label": "Embedding similarity (text-embedding-3-small)",
+   "accuracy": 0.5291666666666667,
+   "macro_f1": 0.5076265508013601,
+   "confusion": {
+    "small": {
+     "small": 22,
+     "strong": 32,
+     "code": 26
+    },
+    "strong": {
+     "small": 9,
+     "strong": 63,
+     "code": 8
+    },
+    "code": {
+     "small": 11,
+     "strong": 27,
+     "code": 42
+    }
+   },
+   "quality_risk": 0.125,
+   "saving_vs_strong": 0.19436781609195408,
+   "latency_p50_ms": 446.1,
+   "latency_p95_ms": 737.2,
+   "usd_per_1k_routes": 0.00137425,
+   "calibration": [
+    {
+     "bin": "0.00\u20130.50",
+     "n": 95,
+     "mean_p": 0.4372901233856331,
+     "acc": 0.3894736842105263
+    },
+    {
+     "bin": "0.50\u20130.80",
+     "n": 138,
+     "mean_p": 0.6166473389130259,
+     "acc": 0.6159420289855072
+    },
+    {
+     "bin": "0.80\u20130.95",
+     "n": 7,
+     "mean_p": 0.8702837155681143,
+     "acc": 0.7142857142857143
+    },
+    {
+     "bin": "0.95\u20131.00",
+     "n": 0,
+     "mean_p": null,
+     "acc": null
+    }
+   ],
+   "p_ge_0_8": {
+    "n": 7,
+    "acc": 0.7142857142857143
+   }
+  },
+  {
+   "key": "strong",
+   "label": "Always strong (gpt-5.4)",
+   "accuracy": 0.3333333333333333,
+   "macro_f1": 0.16666666666666666,
+   "confusion": {
+    "small": {
+     "small": 0,
+     "strong": 80,
+     "code": 0
+    },
+    "strong": {
+     "small": 0,
+     "strong": 80,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 80,
+     "code": 0
+    }
+   },
+   "quality_risk": 0.0,
+   "saving_vs_strong": 0.0,
+   "latency_p50_ms": 0,
+   "latency_p95_ms": 0,
+   "usd_per_1k_routes": 0
+  }
+ ],
+ "jev_accuracy_by_source": {
+  "mmlu": 0.575,
+  "mbpp": 1.0,
+  "dolly": 0.975,
+  "gsm8k": 0.625,
+  "humaneval": 1.0
+ },
+ "laya_slot": "A self-hosted classifier (e.g. an open-source non-autoregressive model) is not wired: no endpoint was available. Adding it = one more router function in benchmark/router/run_bench.py over the same frozen dataset; no numbers are shown for it.",
+ "limits": "Labels are a task-type rubric, not RouterBench-style 'cheapest model that actually answered correctly', so an easy GSM8K item labelled strong may be fine on nano. Zero-shot: model cards were written before the run and not tuned on this set. Saving is estimated from list prices and fixed token counts, not billed. Latency includes 8-way concurrency and the Singapore\u2192US Jev round trip. One run, no confidence intervals (n=240: \u00b1~5 pts at 95%). The 0.6 threshold is the UI default chosen before the run, but it was not validated on a held-out set."
+}
