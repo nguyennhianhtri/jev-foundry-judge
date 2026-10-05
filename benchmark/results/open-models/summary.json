@@ -1,0 +1,43 @@
+{
+ "judge": "Clef-flash (Cloudflare, 9B, Apache-2.0) via selfhost/server.py, same JevAgentJudge questions and weights",
+ "hardware": "Azure Standard_D16as_v7 (16 vCPU, 64 GB, no GPU), East US 2, CPU PyTorch reference kernels",
+ "rows": 47,
+ "overall_vs_human": {
+  "n": 164,
+  "pass_fail_agreement": 0.823,
+  "mae": 0.88,
+  "pearson": 0.708
+ },
+ "metrics_vs_human": {
+  "intent_resolution": {
+   "n": 47,
+   "pass_fail_agreement": 0.915,
+   "mae": 0.62,
+   "pearson": 0.913
+  },
+  "task_adherence": {
+   "n": 47,
+   "pass_fail_agreement": 0.851,
+   "mae": 0.78,
+   "pearson": 0.716
+  },
+  "tool_call_accuracy": {
+   "n": 32,
+   "pass_fail_agreement": 0.656,
+   "mae": 1.38,
+   "pearson": 0.459
+  },
+  "groundedness": {
+   "n": 38,
+   "pass_fail_agreement": 0.816,
+   "mae": 0.92,
+   "pearson": 0.737
+  }
+ },
+ "latency_ms_per_conversation": {
+  "p50": 16696,
+  "p95": 20337
+ },
+ "usd_per_1k_conversations_vm_time": 3.2,
+ "limits": "One run. Questions and weights were tuned on Jev, not re-tuned for Clef. CPU only; a GPU is much faster."
+}

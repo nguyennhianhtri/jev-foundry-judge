@@ -7,8 +7,11 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 
-JEV_URL = "https://api.typesafe.ai/v1/systemone"
-JEV_MODEL = "jev-latest"
+import os
+
+# Any Jev-compatible System One endpoint works, e.g. a self-hosted open-weight model (see selfhost/).
+JEV_URL = os.environ.get("JEV_URL", "https://api.typesafe.ai/v1/systemone")
+JEV_MODEL = os.environ.get("JEV_MODEL", "jev-latest")
 # docs.typesafe.ai/models: $0.042 per 1M input tokens, output tokens free.
 JEV_USD_PER_MTOK_INPUT = 0.042
 

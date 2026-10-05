@@ -1,0 +1,30 @@
+#cloud-config
+# Ubuntu 24.04 VM: installs CPU PyTorch, downloads the open weights and runs the
+# Jev-compatible endpoint on port 8700 as a systemd service.
+# Set SELFHOST_API_KEY below (or via `az vm run-command`) before exposing the port.
+package_update: true
+packages: [python3-venv, git]
+write_files:
+  - path: /etc/systemd/system/systemone.service
+    content: |
+      [Unit]
+      Description=Self-hosted System One (open-weight decision model)
+      After=network-online.target
+      [Service]
+      Environment=MODEL_DIR=/opt/models/clef-flash
+      Environment=MODEL_NAME=clef-flash
+      Environment=SELFHOST_API_KEY=CHANGE_ME
+      WorkingDirectory=/opt/selfhost
+      ExecStart=/opt/venv/bin/uvicorn server:app --host 0.0.0.0 --port 8700
+      Restart=on-failure
+      [Install]
+      WantedBy=multi-user.target
+runcmd:
+  - python3 -m venv /opt/venv
+  - /opt/venv/bin/pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu
+  - /opt/venv/bin/pip install -q "transformers>=5.10" huggingface_hub pillow fastapi uvicorn
+  - mkdir -p /opt/selfhost /opt/models
+  - curl -fsSL https://raw.githubusercontent.com/nguyennhianhtri/jev-foundry-judge/main/selfhost/server.py -o /opt/selfhost/server.py
+  - /opt/venv/bin/python -c "from huggingface_hub import snapshot_download as s; s('Cloudflare/clef-flash', local_dir='/opt/models/clef-flash')"
+  - systemctl daemon-reload
+  - systemctl enable --now systemone

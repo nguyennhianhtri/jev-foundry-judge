@@ -277,8 +277,8 @@ class _JevEvaluator:
     id = ""
 
     def __init__(self, api_key: str | None = None, *, client: JevClient | None = None,
-                 threshold: float = 3, model: str = "jev-latest"):
-        self._client = client or JevClient(api_key or "", model=model)
+                 threshold: float = 3, model: str | None = None):
+        self._client = client or JevClient(api_key or "", **({"model": model} if model else {}))
         self._threshold = threshold
 
     def __call__(self, *, query=None, response=None, tool_definitions=None, tool_calls=None,
@@ -314,8 +314,8 @@ class JevAgentJudge:
     """All metrics for one row in ONE Jev call (speculative fan-out). Foundry-compatible."""
 
     def __init__(self, api_key: str | None = None, *, client: JevClient | None = None,
-                 metrics: list[str] | None = None, threshold: float = 3, model: str = "jev-latest"):
-        self._client = client or JevClient(api_key or "", model=model)
+                 metrics: list[str] | None = None, threshold: float = 3, model: str | None = None):
+        self._client = client or JevClient(api_key or "", **({"model": model} if model else {}))
         self.metrics = metrics or METRICS
         self._threshold = threshold
 

@@ -1,0 +1,126 @@
+{
+ "version": "router-bench-1/open-models",
+ "dataset_sha256": "7e99de1e3d60a3ff03381782d9b61ab376fd3735db3d50843962a19d478498d0",
+ "hardware": "Azure Standard_D16as_v7 (16 vCPU AMD EPYC 9V45, 64 GB RAM, no GPU), East US 2; PyTorch 2.13 CPU, transformers 5.17",
+ "method": "Same 240 frozen prompts, labels, model cards and instruction as the Jev run; zero-shot, one request at a time, latency measured on the VM (no network hop).",
+ "vm_usd_per_hour": 0.726,
+ "routers": [
+  {
+   "key": "clef_flash",
+   "label": "Clef-flash (Cloudflare, 9B, Apache-2.0), CPU",
+   "n": 240,
+   "accuracy": 0.9458,
+   "macro_f1": 0.9455,
+   "confusion": {
+    "small": {
+     "small": 67,
+     "strong": 13,
+     "code": 0
+    },
+    "strong": {
+     "small": 0,
+     "strong": 80,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 0,
+     "code": 80
+    }
+   },
+   "quality_risk": 0.0,
+   "saving_vs_strong": 0.2917,
+   "latency_p50_ms": 2276.5,
+   "latency_p95_ms": 3624.1,
+   "usd_per_1k_routes_vm_time": 0.4975
+  },
+  {
+   "key": "clef_flash_pol",
+   "label": "Clef-flash (Cloudflare, 9B, Apache-2.0), CPU + policy (conf<0.6 \u2192 strong)",
+   "n": 240,
+   "accuracy": 0.9125,
+   "macro_f1": 0.9116,
+   "confusion": {
+    "small": {
+     "small": 60,
+     "strong": 20,
+     "code": 0
+    },
+    "strong": {
+     "small": 0,
+     "strong": 80,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 1,
+     "code": 79
+    }
+   },
+   "quality_risk": 0.0,
+   "saving_vs_strong": 0.2645,
+   "latency_p50_ms": 2276.5,
+   "latency_p95_ms": 3624.1,
+   "usd_per_1k_routes_vm_time": 0.4975
+  },
+  {
+   "key": "clm_8b",
+   "label": "CLM-8B (Qwen3-8B Q8 GGUF), CPU",
+   "n": 240,
+   "accuracy": 0.4583,
+   "macro_f1": 0.436,
+   "confusion": {
+    "small": {
+     "small": 63,
+     "strong": 17,
+     "code": 0
+    },
+    "strong": {
+     "small": 49,
+     "strong": 31,
+     "code": 0
+    },
+    "code": {
+     "small": 63,
+     "strong": 1,
+     "code": 16
+    }
+   },
+   "quality_risk": 0.7,
+   "saving_vs_strong": 0.6759,
+   "latency_p50_ms": 1140.1,
+   "latency_p95_ms": 3450.7,
+   "usd_per_1k_routes_vm_time": 0.2936
+  },
+  {
+   "key": "clm_8b_pol",
+   "label": "CLM-8B (Qwen3-8B Q8 GGUF), CPU + policy (conf<0.6 \u2192 strong)",
+   "n": 240,
+   "accuracy": 0.4583,
+   "macro_f1": 0.3689,
+   "confusion": {
+    "small": {
+     "small": 32,
+     "strong": 48,
+     "code": 0
+    },
+    "strong": {
+     "small": 5,
+     "strong": 75,
+     "code": 0
+    },
+    "code": {
+     "small": 32,
+     "strong": 45,
+     "code": 3
+    }
+   },
+   "quality_risk": 0.2313,
+   "saving_vs_strong": 0.265,
+   "latency_p50_ms": 1140.1,
+   "latency_p95_ms": 3450.7,
+   "usd_per_1k_routes_vm_time": 0.2936
+  }
+ ],
+ "limits": "One run, n=240 (\u00b1~5 pts at 95%). CPU latency is the reference PyTorch path without fused kernels; a GPU is ~10-50x faster. Cost per route assumes one sequential request at a time on an always-on VM; idle time is not counted."
+}

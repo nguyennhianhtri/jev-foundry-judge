@@ -42,6 +42,19 @@ A live Consumption-tier APIM exposes one `auto` deployment:
 
 On a 60-prompt stratified subset it routed 58/60 correctly, with a p50 routing overhead of 125 ms. See [`docs/apim-router.md`](docs/apim-router.md) and [`infra/apim/`](infra/apim/).
 
+## Self-host with open-weight models (no API key, data stays in your tenant)
+
+The judge and router make one `POST /v1/systemone` call. Open-weight decision models expose the same API, so you can swap Jev for a model on your own Azure VM by setting `JEV_URL` and `JEV_MODEL`. [`selfhost/`](selfhost/) has the server, a one-command VM deployment and the full results. Measured on a 16-vCPU CPU VM with no GPU:
+
+| | Jev (API) | Clef-flash (self-hosted, CPU) | Built-in LLM |
+|---|---|---|---|
+| Router accuracy, 240 prompts | 86% (94% with fallback) | **95%** | 80% |
+| Router p50 latency | 279 ms | 2.3 s | 1.5 s |
+| Judge agreement with humans, 47 conversations | 86% | **82%** | 72% |
+| Judge p50 per conversation | 0.3 s | 16.7 s | ~6.4 s |
+
+Clef-flash matches Jev on routing accuracy, and it comes close on judging. On CPU it is slower and costs more per call than the Jev API, so use it when data residency matters more than speed, or add a GPU. CLM-8B was also tested and routed only 46% correctly.
+
 ## Why this pattern
 
 An LLM judge writes an essay and then a number. That makes it slow, token-heavy, and hard to audit or calibrate. Jev is a *System One* model: you give it a state and typed questions (**Score**, **Noul** yes/no, **Choice**), and it returns calibrated probabilities. You pay only for input tokens.

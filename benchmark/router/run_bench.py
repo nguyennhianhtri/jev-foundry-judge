@@ -25,7 +25,7 @@ def aoai(dep, path, body):
     raise RuntimeError("aoai retries")
 out = {}
 # --- Jev
-jc = JevClient([l.split("=", 1)[1].strip().strip('"') for l in open("../../.env") if l.startswith("JEV_API_KEY")][0])
+jc = JevClient(os.environ["JEV_API_KEY"])  # JEV_URL / JEV_MODEL select a self-hosted endpoint (see selfhost/)
 def jev(r):
     x = jr.route(jc, r["prompt"], M); return {"pred": x["choice"], "probs": x["probabilities"], "conf": x["confidence"], "ms": x["latency_ms"], "usd": x["usd"], "in": x["input_tokens"]}
 # --- LLM router (gpt-5.4-mini, same cards, JSON probabilities)

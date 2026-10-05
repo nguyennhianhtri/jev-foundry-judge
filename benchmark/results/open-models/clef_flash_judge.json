@@ -1,0 +1,472 @@
+[
+{
+"id": "sup-01",
+"ms": 18618,
+"scores": {
+"intent_resolution": 4.53,
+"task_adherence": 4.53,
+"tool_call_accuracy": 4.33,
+"groundedness": 4.22
+}
+},
+{
+"id": "sup-02",
+"ms": 20888,
+"scores": {
+"intent_resolution": 4.12,
+"task_adherence": 2.0,
+"tool_call_accuracy": 3.95,
+"groundedness": 4.43
+}
+},
+{
+"id": "sup-03",
+"ms": 15089,
+"scores": {
+"intent_resolution": 3.61,
+"task_adherence": 2.0,
+"tool_call_accuracy": 2.0,
+"groundedness": null
+}
+},
+{
+"id": "sup-04",
+"ms": 19548,
+"scores": {
+"intent_resolution": 4.13,
+"task_adherence": 2.0,
+"tool_call_accuracy": 3.76,
+"groundedness": 4.47
+}
+},
+{
+"id": "sup-05",
+"ms": 18658,
+"scores": {
+"intent_resolution": 3.85,
+"task_adherence": 4.57,
+"tool_call_accuracy": 4.07,
+"groundedness": 4.3
+}
+},
+{
+"id": "sup-06",
+"ms": 14328,
+"scores": {
+"intent_resolution": 3.08,
+"task_adherence": 1.51,
+"tool_call_accuracy": 1.68,
+"groundedness": null
+}
+},
+{
+"id": "sup-07",
+"ms": 16696,
+"scores": {
+"intent_resolution": 2.15,
+"task_adherence": 4.25,
+"tool_call_accuracy": 2.0,
+"groundedness": 4.29
+}
+},
+{
+"id": "sup-08",
+"ms": 17444,
+"scores": {
+"intent_resolution": 4.62,
+"task_adherence": 4.42,
+"tool_call_accuracy": 3.85,
+"groundedness": 4.66
+}
+},
+{
+"id": "rag-01",
+"ms": 11979,
+"scores": {
+"intent_resolution": 4.74,
+"task_adherence": 4.14,
+"tool_call_accuracy": null,
+"groundedness": 4.83
+}
+},
+{
+"id": "rag-02",
+"ms": 11362,
+"scores": {
+"intent_resolution": 2.34,
+"task_adherence": 2.0,
+"tool_call_accuracy": null,
+"groundedness": 1.97
+}
+},
+{
+"id": "rag-03",
+"ms": 12074,
+"scores": {
+"intent_resolution": 4.07,
+"task_adherence": 3.79,
+"tool_call_accuracy": null,
+"groundedness": 4.47
+}
+},
+{
+"id": "rag-04",
+"ms": 12907,
+"scores": {
+"intent_resolution": 3.81,
+"task_adherence": 1.88,
+"tool_call_accuracy": null,
+"groundedness": 1.75
+}
+},
+{
+"id": "rag-05",
+"ms": 11888,
+"scores": {
+"intent_resolution": 3.14,
+"task_adherence": 4.53,
+"tool_call_accuracy": null,
+"groundedness": 3.99
+}
+},
+{
+"id": "rag-06",
+"ms": 12026,
+"scores": {
+"intent_resolution": 2.73,
+"task_adherence": 2.0,
+"tool_call_accuracy": null,
+"groundedness": 2.16
+}
+},
+{
+"id": "rag-07",
+"ms": 12720,
+"scores": {
+"intent_resolution": 4.64,
+"task_adherence": 4.1,
+"tool_call_accuracy": null,
+"groundedness": 4.55
+}
+},
+{
+"id": "trv-01",
+"ms": 20429,
+"scores": {
+"intent_resolution": 3.63,
+"task_adherence": 3.69,
+"tool_call_accuracy": 4.38,
+"groundedness": 4.6
+}
+},
+{
+"id": "trv-02",
+"ms": 17974,
+"scores": {
+"intent_resolution": 4.29,
+"task_adherence": 3.49,
+"tool_call_accuracy": 4.29,
+"groundedness": 4.49
+}
+},
+{
+"id": "trv-03",
+"ms": 16746,
+"scores": {
+"intent_resolution": 2.0,
+"task_adherence": 2.99,
+"tool_call_accuracy": 2.0,
+"groundedness": 2.8
+}
+},
+{
+"id": "trv-04",
+"ms": 16924,
+"scores": {
+"intent_resolution": 3.71,
+"task_adherence": 2.98,
+"tool_call_accuracy": 4.12,
+"groundedness": 2.0
+}
+},
+{
+"id": "trv-05",
+"ms": 17392,
+"scores": {
+"intent_resolution": 4.52,
+"task_adherence": 3.91,
+"tool_call_accuracy": 4.59,
+"groundedness": 4.38
+}
+},
+{
+"id": "trv-06",
+"ms": 13703,
+"scores": {
+"intent_resolution": 2.85,
+"task_adherence": 4.32,
+"tool_call_accuracy": 2.0,
+"groundedness": null
+}
+},
+{
+"id": "sup-01~drop_tool_calls",
+"ms": 14303,
+"scores": {
+"intent_resolution": 3.81,
+"task_adherence": 2.0,
+"tool_call_accuracy": 2.94,
+"groundedness": null
+}
+},
+{
+"id": "sup-01~corrupt_argument",
+"ms": 18870,
+"scores": {
+"intent_resolution": 4.29,
+"task_adherence": 3.33,
+"tool_call_accuracy": 3.01,
+"groundedness": 4.24
+}
+},
+{
+"id": "sup-01~inject_unsupported_claim",
+"ms": 18233,
+"scores": {
+"intent_resolution": 4.57,
+"task_adherence": 4.38,
+"tool_call_accuracy": 4.24,
+"groundedness": 4.14
+}
+},
+{
+"id": "sup-01~off_topic_answer",
+"ms": 20372,
+"scores": {
+"intent_resolution": 1.5,
+"task_adherence": 2.98,
+"tool_call_accuracy": 4.15,
+"groundedness": 2.58
+}
+},
+{
+"id": "sup-05~drop_tool_calls",
+"ms": 18334,
+"scores": {
+"intent_resolution": 3.49,
+"task_adherence": 2.98,
+"tool_call_accuracy": 2.0,
+"groundedness": null
+}
+},
+{
+"id": "sup-05~corrupt_argument",
+"ms": 18797,
+"scores": {
+"intent_resolution": 3.88,
+"task_adherence": 4.31,
+"tool_call_accuracy": 3.69,
+"groundedness": 4.32
+}
+},
+{
+"id": "sup-05~inject_unsupported_claim",
+"ms": 18048,
+"scores": {
+"intent_resolution": 4.03,
+"task_adherence": 4.49,
+"tool_call_accuracy": 4.05,
+"groundedness": 3.95
+}
+},
+{
+"id": "sup-05~off_topic_answer",
+"ms": 18281,
+"scores": {
+"intent_resolution": 1.29,
+"task_adherence": 2.86,
+"tool_call_accuracy": 4.0,
+"groundedness": 2.59
+}
+},
+{
+"id": "rag-01~inject_unsupported_claim",
+"ms": 12746,
+"scores": {
+"intent_resolution": 3.84,
+"task_adherence": 3.33,
+"tool_call_accuracy": null,
+"groundedness": 3.76
+}
+},
+{
+"id": "rag-01~off_topic_answer",
+"ms": 13684,
+"scores": {
+"intent_resolution": 1.23,
+"task_adherence": 1.68,
+"tool_call_accuracy": null,
+"groundedness": 2.0
+}
+},
+{
+"id": "rag-03~inject_unsupported_claim",
+"ms": 12624,
+"scores": {
+"intent_resolution": 4.16,
+"task_adherence": 3.17,
+"tool_call_accuracy": null,
+"groundedness": 2.0
+}
+},
+{
+"id": "rag-03~off_topic_answer",
+"ms": 13738,
+"scores": {
+"intent_resolution": 1.27,
+"task_adherence": 1.7,
+"tool_call_accuracy": null,
+"groundedness": 2.0
+}
+},
+{
+"id": "rag-05~inject_unsupported_claim",
+"ms": 14141,
+"scores": {
+"intent_resolution": 2.8,
+"task_adherence": 3.39,
+"tool_call_accuracy": null,
+"groundedness": 2.0
+}
+},
+{
+"id": "rag-05~off_topic_answer",
+"ms": 12465,
+"scores": {
+"intent_resolution": 1.18,
+"task_adherence": 1.69,
+"tool_call_accuracy": null,
+"groundedness": 2.0
+}
+},
+{
+"id": "rag-07~inject_unsupported_claim",
+"ms": 12657,
+"scores": {
+"intent_resolution": 4.23,
+"task_adherence": 3.33,
+"tool_call_accuracy": null,
+"groundedness": 3.94
+}
+},
+{
+"id": "rag-07~off_topic_answer",
+"ms": 11769,
+"scores": {
+"intent_resolution": 1.22,
+"task_adherence": 1.61,
+"tool_call_accuracy": null,
+"groundedness": 2.0
+}
+},
+{
+"id": "trv-01~drop_tool_calls",
+"ms": 14537,
+"scores": {
+"intent_resolution": 3.65,
+"task_adherence": 3.86,
+"tool_call_accuracy": 2.95,
+"groundedness": null
+}
+},
+{
+"id": "trv-01~corrupt_argument",
+"ms": 17149,
+"scores": {
+"intent_resolution": 3.62,
+"task_adherence": 3.66,
+"tool_call_accuracy": 3.81,
+"groundedness": 4.49
+}
+},
+{
+"id": "trv-01~inject_unsupported_claim",
+"ms": 17368,
+"scores": {
+"intent_resolution": 3.31,
+"task_adherence": 3.74,
+"tool_call_accuracy": 4.39,
+"groundedness": 3.81
+}
+},
+{
+"id": "trv-01~off_topic_answer",
+"ms": 18720,
+"scores": {
+"intent_resolution": 1.28,
+"task_adherence": 2.22,
+"tool_call_accuracy": 4.52,
+"groundedness": 2.0
+}
+},
+{
+"id": "trv-05~drop_tool_calls",
+"ms": 13626,
+"scores": {
+"intent_resolution": 4.26,
+"task_adherence": 3.94,
+"tool_call_accuracy": 4.04,
+"groundedness": null
+}
+},
+{
+"id": "trv-05~corrupt_argument",
+"ms": 17224,
+"scores": {
+"intent_resolution": 4.56,
+"task_adherence": 4.04,
+"tool_call_accuracy": 4.44,
+"groundedness": 4.37
+}
+},
+{
+"id": "trv-05~inject_unsupported_claim",
+"ms": 20337,
+"scores": {
+"intent_resolution": 4.52,
+"task_adherence": 3.9,
+"tool_call_accuracy": 4.63,
+"groundedness": 3.5
+}
+},
+{
+"id": "trv-05~off_topic_answer",
+"ms": 19724,
+"scores": {
+"intent_resolution": 1.59,
+"task_adherence": 3.2,
+"tool_call_accuracy": 4.4,
+"groundedness": 2.0
+}
+},
+{
+"id": "trv-06~inject_unsupported_claim",
+"ms": 12955,
+"scores": {
+"intent_resolution": 2.77,
+"task_adherence": 4.13,
+"tool_call_accuracy": 2.0,
+"groundedness": null
+}
+},
+{
+"id": "trv-06~off_topic_answer",
+"ms": 16389,
+"scores": {
+"intent_resolution": 1.15,
+"task_adherence": 1.66,
+"tool_call_accuracy": 1.66,
+"groundedness": null
+}
+}
+]
