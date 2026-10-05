@@ -1,0 +1,120 @@
+<!-- White-label gateway: POST {gateway}/gw/v1/chat/completions (OpenAI chat-completions contract, key in the `api-key`
+     header; OpenAI SDK: default_headers={"api-key": KEY}). The control plane (/api/gw/decide) checks the key's allow-list, rate and credits,
+     runs the router classifier for model "auto", and returns the backend pool. APIM forwards with managed identity,
+     keeps circuit breakers + priority failover in the pools, stamps x-gateway-* headers and reports usage. -->
+<policies>
+  <inbound>
+    <base />
+    <set-variable name="body" value="@(context.Request.Body.As<JObject>(preserveContent: true))" />
+    <set-variable name="requested" value="@{ var m = (string)((JObject)context.Variables["body"])["model"]; return string.IsNullOrEmpty(m) ? "auto" : m; }" />
+    <set-variable name="prompt" value="@{
+        var msgs = ((JObject)context.Variables["body"])["messages"] as JArray;
+        var u = msgs?.LastOrDefault(x => (string)x["role"] == "user");
+        var c = u?["content"];
+        if (c == null) { return ""; }
+        if (c.Type == JTokenType.String) { return (string)c; }
+        return string.Join("\n", c.Where(p => (string)p["type"] == "text").Select(p => (string)p["text"]));
+    }" />
+    <rate-limit calls="{{gw-calls-per-minute}}" renewal-period="60" />
+    <send-request mode="new" response-variable-name="d" timeout="{{gw-decide-timeout-s}}" ignore-error="true">
+      <set-url>{{gw-control-url}}/api/gw/decide</set-url>
+      <set-method>POST</set-method>
+      <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+      <set-header name="x-gw-internal" exists-action="override"><value>{{gw-internal-token}}</value></set-header>
+      <set-header name="x-jev-key" exists-action="override"><value>{{jev-key}}</value></set-header>
+      <set-body>@{
+          var p = (string)context.Variables["prompt"]; if (p.Length > 8000) { p = p.Substring(0, 8000); }
+          return new JObject(new JProperty("sub", context.Subscription?.Id ?? ""),
+                             new JProperty("model", (string)context.Variables["requested"]),
+                             new JProperty("prompt", p)).ToString();
+      }</set-body>
+    </send-request>
+    <set-variable name="dec" value="@{
+        var r = context.Variables.GetValueOrDefault<IResponse>("d");
+        if (r == null || r.StatusCode != 200) {
+          return new JObject(new JProperty("allow", true), new JProperty("model", "{{gw-fallback-model}}"),
+                             new JProperty("pool", "{{gw-fallback-pool}}"), new JProperty("pin", 2.5), new JProperty("pout", 15.0), new JProperty("confidence", ""), new JProperty("classifier", "none"),
+                             new JProperty("reason", "control plane unavailable; fell back to {{gw-fallback-model}}")).ToString();
+        }
+        return r.Body.As<JObject>().ToString();
+    }" />
+    <choose>
+      <when condition="@(!(bool)JObject.Parse((string)context.Variables["dec"])["allow"])">
+        <return-response>
+          <set-status code="@((int)JObject.Parse((string)context.Variables["dec"])["status"])" reason="Rejected" />
+          <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+          <set-header name="x-gateway-reason" exists-action="override"><value>@((string)JObject.Parse((string)context.Variables["dec"])["code"])</value></set-header>
+          <set-body>@{
+              var d = JObject.Parse((string)context.Variables["dec"]);
+              return new JObject(new JProperty("error", new JObject(new JProperty("code", d["code"]),
+                  new JProperty("type", d["code"]), new JProperty("message", d["message"])))).ToString();
+          }</set-body>
+        </return-response>
+      </when>
+    </choose>
+    <set-variable name="routed" value="@((string)JObject.Parse((string)context.Variables["dec"])["model"])" />
+    <set-variable name="pool" value="@((string)JObject.Parse((string)context.Variables["dec"])["pool"])" />
+    <set-variable name="t0" value="@(DateTime.UtcNow)" />
+    <set-backend-service backend-id="@("gw-pool-" + (string)context.Variables["pool"])" />
+    <!-- drop fields the deployment-scoped Azure endpoint does not take -->
+    <set-body>@{
+        var b = (JObject)((JObject)context.Variables["body"]).DeepClone();
+        b.Remove("model"); b.Remove("stream");
+        var mx = b["max_tokens"]; if (mx != null) { b.Remove("max_tokens"); if (b["max_completion_tokens"] == null) { b["max_completion_tokens"] = mx; } }
+        return b.ToString();
+    }</set-body>
+    <rewrite-uri template="/chat/completions" copy-unmatched-params="false" />
+    <set-query-parameter name="api-version" exists-action="override"><value>2025-04-01-preview</value></set-query-parameter>
+    <set-header name="api-key" exists-action="delete" />
+    <set-header name="Authorization" exists-action="delete" />
+    <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
+    <llm-emit-token-metric namespace="model-gateway">
+      <dimension name="routed-model" value="@((string)context.Variables["routed"])" />
+      <dimension name="Subscription ID" />
+    </llm-emit-token-metric>
+  </inbound>
+  <backend>
+    <forward-request buffer-request-body="true" timeout="120" />
+  </backend>
+  <outbound>
+    <base />
+    <set-variable name="usage" value="@{
+        try { var u = context.Response.Body.As<JObject>(preserveContent: true)["usage"];
+              return ((int?)u?["prompt_tokens"] ?? 0) + "|" + ((int?)u?["completion_tokens"] ?? 0); }
+        catch { return "0|0"; }
+    }" />
+    <set-variable name="cost" value="@{
+        var d = JObject.Parse((string)context.Variables["dec"]); var u = ((string)context.Variables["usage"]).Split('|');
+        var c = (double.Parse(u[0]) * (double)d["pin"] + double.Parse(u[1]) * (double)d["pout"]) / 1000000.0;
+        return c.ToString("0.00000000");
+    }" />
+    <set-header name="x-gateway-model" exists-action="override"><value>@((string)context.Variables["routed"])</value></set-header>
+    <set-header name="x-gateway-reason" exists-action="override"><value>@((string)JObject.Parse((string)context.Variables["dec"])["reason"])</value></set-header>
+    <set-header name="x-gateway-confidence" exists-action="override"><value>@((string)JObject.Parse((string)context.Variables["dec"])["confidence"])</value></set-header>
+    <set-header name="x-gateway-classifier" exists-action="override"><value>@((string)JObject.Parse((string)context.Variables["dec"])["classifier"])</value></set-header>
+    <set-header name="x-gateway-cost-usd" exists-action="override"><value>@((string)context.Variables["cost"])</value></set-header>
+    <!-- report the model id the caller sees, not the backend deployment name -->
+    <set-body>@{
+        try { var o = context.Response.Body.As<JObject>(); o["model"] = (string)context.Variables["routed"]; return o.ToString(); }
+        catch { return context.Response.Body.As<string>(); }
+    }</set-body>
+    <send-one-way-request mode="new">
+      <set-url>{{gw-control-url}}/api/gw/meter</set-url>
+      <set-method>POST</set-method>
+      <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+      <set-header name="x-gw-internal" exists-action="override"><value>{{gw-internal-token}}</value></set-header>
+      <set-body>@{
+          var u = ((string)context.Variables["usage"]).Split('|'); var d = JObject.Parse((string)context.Variables["dec"]);
+          return new JObject(new JProperty("sub", context.Subscription?.Id ?? ""), new JProperty("model", (string)context.Variables["routed"]),
+              new JProperty("requested", (string)context.Variables["requested"]), new JProperty("reason", d["reason"]),
+              new JProperty("status", context.Response.StatusCode), new JProperty("prompt_tokens", int.Parse(u[0])),
+              new JProperty("completion_tokens", int.Parse(u[1])),
+              new JProperty("ms", (int)(DateTime.UtcNow - (DateTime)context.Variables["t0"]).TotalMilliseconds)).ToString();
+      }</set-body>
+    </send-one-way-request>
+  </outbound>
+  <on-error>
+    <base />
+    <set-header name="x-gateway-model" exists-action="override"><value>@(context.Variables.GetValueOrDefault<string>("routed", ""))</value></set-header>
+  </on-error>
+</policies>

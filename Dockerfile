@@ -5,6 +5,7 @@ COPY requirements.txt requirements-baseline.txt ./
 RUN pip install --no-cache-dir -r requirements.txt -r requirements-baseline.txt
 COPY src ./src
 COPY app ./app
+COPY gateway/themes ./gateway/themes
 COPY samples/*.jsonl ./samples/
 ARG APP_VERSION=dev
 ENV APP_VERSION=$APP_VERSION SAMPLES_DIR=/app/samples

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="One OpenAI-compatible endpoint for every model you run, routed to the cheapest model that can do the job, with per-key limits and prepaid credits.">
+<meta name="theme-color" content="#0a0d12">
+<title>Model Gateway</title>
+<link rel="stylesheet" href="/static/gateway/gw.css">
+<link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%233563e9'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="brand" href="#catalogue" aria-label="Home"><span class="mark" id="b-mark" aria-hidden="true">MG</span><span id="b-name">Model Gateway</span></a>
+  <button class="icon menu" id="menu" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  <nav id="nav" class="nav" aria-label="Main">
+    <a href="#catalogue" data-tab="catalogue">Model catalogue</a>
+    <a href="#playground" data-tab="playground">Playground</a>
+    <a href="#usage" data-tab="usage">Usage &amp; credits</a>
+    <a href="#admin" data-tab="admin">Admin</a>
+  </nav>
+  <div class="right"><span class="ver" id="ver"></span>
+    <button class="icon" id="themeBtn" type="button" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg></button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <p class="eyebrow">OpenAI-compatible · auto-routed · metered per key</p>
+    <h1 id="tagline">One OpenAI-compatible endpoint for every model you run.</h1>
+    <div class="endpoint"><span class="lbl">Endpoint</span><code id="ep">loading…</code><button type="button" id="copyEp" class="ghost sm">Copy</button></div>
+  </section>
+
+  <!-- catalogue -->
+  <section class="tab" id="t-catalogue" aria-labelledby="h-cat">
+    <div class="head"><h2 id="h-cat">Model catalogue</h2><p class="mut" id="priceSrc"></p></div>
+    <div class="grid" id="cards"><p class="mut state">Loading models…</p></div>
+  </section>
+
+  <!-- sign in -->
+  <section class="tab" id="t-login" aria-labelledby="h-login" hidden>
+    <div class="card narrow">
+      <h2 id="h-login">Sign in</h2>
+      <p class="mut">The playground, usage and admin pages are for the platform operator.</p>
+      <form id="loginForm" class="col">
+        <label for="pw">Password</label>
+        <input id="pw" type="password" autocomplete="current-password" required>
+        <p class="err" id="loginErr" role="alert" hidden></p>
+        <button class="primary" type="submit" id="loginBtn">Sign in</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- playground -->
+  <section class="tab" id="t-playground" aria-labelledby="h-pg" hidden>
+    <div class="head"><h2 id="h-pg">Playground</h2><p class="mut">Calls go through the live gateway with the built-in playground key.</p></div>
+    <div class="pg">
+      <aside class="card settings" aria-label="Settings">
+        <label for="pgModel">Model</label>
+        <select id="pgModel"><option value="auto">Auto-routed</option></select>
+        <label for="pgSys">System message</label>
+        <textarea id="pgSys" rows="4">You are a helpful assistant. Answer concisely.</textarea>
+        <label for="pgTemp">Temperature <output id="pgTempV">0.7</output></label>
+        <input id="pgTemp" type="range" min="0" max="2" step="0.1" value="0.7">
+        <button type="button" id="pgClear" class="ghost">Clear chat</button>
+      </aside>
+      <div class="card chat">
+        <div id="log" class="log" aria-live="polite"><p class="mut state" id="pgEmpty">Ask anything. Try a greeting, a maths word problem and a coding task to see each go to a different model.</p></div>
+        <div class="examples" id="examples"></div>
+        <form id="pgForm" class="send">
+          <label for="pgIn" class="sr">Message</label>
+          <textarea id="pgIn" rows="2" placeholder="Type a message" required></textarea>
+          <button class="primary" type="submit" id="pgSend">Send</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- usage -->
+  <section class="tab" id="t-usage" aria-labelledby="h-use" hidden>
+    <div class="head"><h2 id="h-use">Usage &amp; credits</h2><p class="mut" id="useSrc"></p></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="card"><h3>Per key</h3><div class="tw"><table class="tbl" id="keysTbl"><thead><tr><th scope="col">Key</th><th scope="col" class="n">Calls</th><th scope="col" class="n">Tokens in / out</th><th scope="col" class="n">Spend</th><th scope="col" class="n">Credits</th><th scope="col" class="n">Balance</th></tr></thead><tbody><tr><td colspan="6" class="mut">Loading…</td></tr></tbody></table></div></div>
+    <div class="card"><h3>Recent calls</h3><div class="tw"><table class="tbl" id="recentTbl"><thead><tr><th scope="col">Time</th><th scope="col">Key</th><th scope="col">Asked</th><th scope="col">Routed to</th><th scope="col" class="n">Status</th><th scope="col" class="n">Cost</th></tr></thead><tbody></tbody></table></div></div>
+  </section>
+
+  <!-- admin -->
+  <section class="tab" id="t-admin" aria-labelledby="h-adm" hidden>
+    <div class="head"><h2 id="h-adm">Admin</h2><p class="mut">Keys are API Management subscriptions. Changes apply within about 20 seconds.</p></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Routing policy</h3>
+        <form id="polForm" class="col">
+          <label for="polCls">Router classifier</label>
+          <select id="polCls"><option value="jev">Jev API (vendor)</option><option value="selfhost">Self-hosted open-weight (your tenant)</option></select>
+          <p class="hint" id="selfhostSt"></p>
+          <label for="polCheap">Cheapest model above probability <output id="polCheapV"></output></label>
+          <input id="polCheap" type="range" min="0" max="1" step="0.05">
+          <label for="polConf">Fall back when confidence is below <output id="polConfV"></output></label>
+          <input id="polConf" type="range" min="0" max="1" step="0.05">
+          <label for="polFb">Fallback model</label>
+          <select id="polFb"></select>
+          <label for="polBudget">Budget guard: switch to the cheapest model at % of credits used</label>
+          <input id="polBudget" type="number" min="0" max="100" step="5">
+          <p class="ok" id="polMsg" role="status" hidden></p>
+          <button class="primary" type="submit">Save policy</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Create API key</h3>
+        <form id="keyForm" class="col">
+          <label for="kName">Name</label>
+          <input id="kName" maxlength="40" placeholder="e.g. Contact-centre pilot" required>
+          <fieldset><legend>Allowed models</legend><div id="kModels" class="checks"></div></fieldset>
+          <div class="two"><div class="col"><label for="kCpm">Requests per minute</label><input id="kCpm" type="number" min="1" max="10000" value="30"></div>
+          <div class="col"><label for="kCred">Prepaid credits (USD)</label><input id="kCred" type="number" min="0" step="0.5" value="5"></div></div>
+          <p class="err" id="keyErr" role="alert" hidden></p>
+          <button class="ghost" type="submit" id="keyBtn">Create key</button>
+        </form>
+        <div id="newKey" class="newkey" hidden><p><b>Copy this key now.</b> It is shown only once.</p><code id="newKeyV"></code><button type="button" class="ghost sm" id="copyKey">Copy</button><pre id="curl"></pre></div>
+      </div>
+    </div>
+    <div class="card"><h3>API keys</h3><div class="tw"><table class="tbl" id="admKeys"><thead><tr><th scope="col">Name</th><th scope="col">ID</th><th scope="col">Allowed models</th><th scope="col" class="n">Req/min</th><th scope="col" class="n">Credits</th><th scope="col"><span class="sr">Actions</span></th></tr></thead><tbody></tbody></table></div></div>
+    <p><button type="button" class="ghost" id="logout">Sign out</button></p>
+  </section>
+</main>
+<footer class="foot"><span id="fName">Model Gateway</span> · <span id="fVer"></span> · Powered by Azure API Management and Microsoft Foundry</footer>
+<script src="/static/gateway/gw.js"></script>
+</body>
+</html>

@@ -436,6 +436,13 @@ def stats_page(request: Request):
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
 
+from gateway_api import router as gateway_router  # noqa: E402
+
+app.include_router(gateway_router)
+
+
 @app.get("/")
 def index():
+    if os.getenv("GW_HOME") == "1":  # white-label gateway deployment: the portal is the home page
+        return FileResponse(ROOT / "static" / "gateway" / "index.html")
     return FileResponse(ROOT / "static" / "router.html")

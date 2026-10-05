@@ -1,0 +1,11 @@
+{
+  "name": "Model Gateway",
+  "tagline": "One OpenAI-compatible endpoint for every model you run, routed to the cheapest one that can do the job.",
+  "logo_text": "MG",
+  "accent": "#3563e9",
+  "accent_light": "#2b5fe0",
+  "accent2": "#3fd0b0",
+  "currency": "USD",
+  "fx_per_usd": 1.0,
+  "support": "Your platform team"
+}

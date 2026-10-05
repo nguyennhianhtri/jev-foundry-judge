@@ -42,6 +42,12 @@ A live Consumption-tier APIM exposes one `auto` deployment:
 
 On a 60-prompt stratified subset it routed 58/60 correctly, with a p50 routing overhead of 125 ms. See [`docs/apim-router.md`](docs/apim-router.md) and [`infra/apim/`](infra/apim/).
 
+## White-label model gateway
+
+The router also powers a partner-brandable **model gateway**: one OpenAI-compatible endpoint on Azure API Management (`model: auto` or a named model) in front of Azure OpenAI, Microsoft Foundry open-weight models and any OpenAI-compatible URL. Each API key has a model allow-list, a requests-per-minute limit and prepaid credits. A portal provides the model catalogue, an auto-routed playground (routed model, reason, tokens, latency and cost per reply), usage and credits, and admin. One theme file rebrands it. See [`gateway/README.md`](gateway/README.md) for the architecture, deployment and a 3-minute demo script.
+
+![Model gateway](docs/gateway-architecture.png)
+
 ## Self-host with open-weight models (no API key, data stays in your tenant)
 
 The judge and router make one `POST /v1/systemone` call. Open-weight decision models expose the same API, so you can swap Jev for a model on your own Azure VM by setting `JEV_URL` and `JEV_MODEL`. [`selfhost/`](selfhost/) has the server, a one-command VM deployment and the full results. Measured on a 16-vCPU CPU VM with no GPU:

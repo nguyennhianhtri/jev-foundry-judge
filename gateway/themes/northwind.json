@@ -1,0 +1,11 @@
+{
+  "name": "Northwind AI Cloud",
+  "tagline": "In-region AI as a service for your business: one endpoint, every model, metered per key.",
+  "logo_text": "N",
+  "accent": "#0f8a6b",
+  "accent_light": "#0b6e55",
+  "accent2": "#f5b84b",
+  "currency": "SGD",
+  "fx_per_usd": 1.29,
+  "support": "Northwind AI Cloud support"
+}
