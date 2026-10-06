@@ -5,11 +5,37 @@ Four drop-in evaluators match the Foundry built-ins: Intent Resolution, Task Adh
 
 A demo web app is included. Paste your own Jev key, build or upload an eval dataset, then run Jev next to Foundry's own LLM-judge evaluators. The app measures latency, cost and agreement with human labels. **Every run goes through `azure.ai.evaluation.evaluate(..., azure_ai_project=...)`, so the results appear in the demo's Foundry project.** The dashboard links straight to the run with an "Open in Foundry portal" button.
 
-![Architecture](docs/architecture.png)
-
 ![Dashboard](docs/screenshots/shot-2-dashboard.png)
 
 > Demo video (silent, captioned, 77 s, recorded on the live app v1.40.0): [`demo/jev-foundry-judge-demo-silent.mp4`](demo/jev-foundry-judge-demo-silent.mp4), captions also in `demo/jev-foundry-judge-demo-silent.vtt`. To add narration in your own voice, record the lines in `demo/narration-script.md` and run `python demo/make_voiceover.py --recordings <dir>`.
+
+## Quick start
+
+Pick one of three ways to run the router and judge.
+
+**1. Bring your own Jev key (fastest).** Open the hosted demo, paste your key (it stays in the browser tab), and press Route or Evaluate. To run it locally:
+```bash
+pip install -r requirements.txt
+PYTHONPATH=src uvicorn main:app --app-dir app --port 8080   # open http://localhost:8080, paste your key
+curl -s localhost:8080/api/router/route -H "X-Jev-Key: $JEV_KEY" -H 'content-type: application/json' \
+  -d '{"prompts":["Prove that sqrt(2) is irrational"]}'
+```
+
+**2. Behind Azure API Management (OpenAI-compatible, `model: auto`).** Deploy `infra/apim/` (Consumption tier). Put the Jev key in Key Vault and give APIM a managed identity to Azure OpenAI. Then call the gateway like any Azure OpenAI deployment:
+```bash
+curl -s "https://<apim>.azure-api.net/openai/deployments/auto/chat/completions" \
+  -H "api-key: $APIM_KEY" -H 'content-type: application/json' \
+  -d '{"messages":[{"role":"user","content":"Write a Python function that reverses a list"}]}'
+```
+The steps, policies and measurements are in [`docs/apim-router.md`](docs/apim-router.md).
+
+**3. Self-host with no API key.** Deploy `selfhost/` to a VM in your own tenant (one command, see [`selfhost/README.md`](selfhost/README.md)), then point the app at it:
+```bash
+JEV_URL=http://<vm-private-ip>:8700/v1/systemone JEV_MODEL=<model> PYTHONPATH=src uvicorn main:app --app-dir app --port 8080
+```
+Use Clef-flash for this. CLM-8B was tested and is not good enough for routing (see below).
+
+![Architecture](docs/architecture.png)
 
 ## Model router (home page)
 
@@ -59,7 +85,9 @@ The judge and router make one `POST /v1/systemone` call. Open-weight decision mo
 | Judge agreement with humans, 47 conversations | 86% | **82%** | 72% |
 | Judge p50 per conversation | 0.3 s | 16.7 s | ~6.4 s |
 
-Clef-flash matches Jev on routing accuracy, and it comes close on judging. On CPU it is slower and costs more per call than the Jev API, so use it when data residency matters more than speed, or add a GPU. CLM-8B was also tested and routed only 46% correctly.
+Clef-flash matches Jev on routing accuracy, and it comes close on judging. On CPU it is slower and costs more per call than the Jev API, so use it when data residency matters more than speed, or add a GPU.
+
+**CLM-8B trial (negative result, 2026-09-29).** We also self-hosted [CLM-8B](https://github.com/Contrastive-LM/CLM), an open-source TypeSafe-compatible model, on a 16-vCPU CPU VM (Standard_D16as_v7, llama.cpp embeddings checked against the reference model at cosine ≥ 0.9992). Given the same request Jev gets, it routed **37%** of the 240 prompts correctly (macro-F1 0.27). Its best case, with a plainer state, was 46%. Jev routes 86% correctly. CLM-8B's p50 latency was 1.15 s and its p95 was 3.7 s. That is below our 80% bar, so CLM-8B is not offered as a backend. The run cost about US$0.45, and the VM is deallocated. Raw data is in `benchmark/router/open-models/`. It may do better after fine-tuning; we did not try that.
 
 ## Why this pattern
 
@@ -164,7 +192,7 @@ src/jev_foundry_judge/   evaluators.py (metric specs + combine), jev_client.py, 
 app/                     FastAPI app + static UI (no build step)
 samples/                 synthetic datasets + generator
 scripts/                 benchmark.py (live), register_evaluators.py (Foundry custom evaluators), journey.js (browser journey + screen capture)
-docs/                    architecture.drawio / .png (generator: make_diagram.py), screenshots
+docs/                    architecture + APIM + gateway diagrams (.drawio/.png, make_*_diagram.py), apim-router.md, PUBLISH-KIT.md, screenshots
 benchmark/results/       measured run: dataset.jsonl, results.jsonl, summary.json
 demo/                    captioned demo cut, narration script, voiceover muxer
 tests/                   offline tests (no network)
