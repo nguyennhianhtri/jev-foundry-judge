@@ -1,0 +1,39 @@
+1
+00:00:00,001 --> 00:00:05,002
+Jev Foundry Judge, part 1: the router sends each prompt to the cheapest model that can handle it.
+
+2
+00:00:05,002 --> 00:00:08,588
+Paste a Jev key. It stays in this browser tab and the field is masked.
+
+3
+00:00:08,588 --> 00:00:12,598
+Load nine mixed prompts, from trivia to hard reasoning.
+
+4
+00:00:12,598 --> 00:00:25,360
+Route them. Jev predicts which model can answer each one, and the cost is estimated.
+
+5
+00:00:25,360 --> 00:00:31,243
+Part 2: /evaluate. Jev scores agent conversations on four Azure AI Foundry evaluators.
+
+6
+00:00:31,243 --> 00:00:36,464
+Connect the same key. It is never stored or logged.
+
+7
+00:00:36,464 --> 00:00:43,491
+Pick a synthetic scenario dataset. Every case shows the request, answer and tools.
+
+8
+00:00:43,491 --> 00:01:01,238
+Run Jev on the dataset. Latency and cost come from each live response.
+
+9
+00:01:01,238 --> 00:01:15,062
+The dashboard shows each check, agreement with human labels, latency and cost.
+
+10
+00:01:15,062 --> 00:01:21,150
+Export the results, a brief or a benchmark package. Silent fallback cut; narration comes later.
