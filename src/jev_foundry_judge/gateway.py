@@ -356,7 +356,7 @@ def _classifier(cfg: dict, jev_key: str | None) -> JevClient | None:
         if not url:
             return None
         return JevClient(os.getenv("SELFHOST_API_KEY") or "none", model=os.getenv("SELFHOST_MODEL", "clef-flash"),
-                         url=url.rstrip("/") + "/v1/systemone", timeout=8)
+                         url=url.rstrip("/") + "/v1/systemone", timeout=float(os.getenv("SELFHOST_TIMEOUT", "8")))
     return JevClient(jev_key, timeout=8) if jev_key else None
 
 
