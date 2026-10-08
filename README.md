@@ -74,6 +74,8 @@ The router also powers a partner-brandable **model gateway**: one OpenAI-compati
 
 ![Model gateway](docs/gateway-architecture.png)
 
+**All results in one place:** [`docs/findings.md`](docs/findings.md).
+
 ## Self-host with open-weight models (no API key, data stays in your tenant)
 
 The judge and router make one `POST /v1/systemone` call. Open-weight decision models expose the same API, so you can swap Jev for a model on your own Azure VM by setting `JEV_URL` and `JEV_MODEL`. [`selfhost/`](selfhost/) has the server, a one-command VM deployment and the full results. Measured on a 16-vCPU CPU VM with no GPU:
