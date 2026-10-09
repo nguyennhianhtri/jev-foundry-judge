@@ -12,3 +12,4 @@ STREAM*.md
 workspace/
 STREAM*.md
 .worktrees/
+*.egg-info/

@@ -1,0 +1,41 @@
+{
+ "judge": "pplx-decider-v1.1-27b (Perplexity, 27B, Apache-2.0) via selfhost/pplx-decider on Azure Container Apps serverless A100 80GB, same JevAgentJudge questions and weights",
+ "rows": 47,
+ "overall_vs_human": {
+  "n": 164,
+  "pass_fail_agreement": 0.854,
+  "mae": 0.58,
+  "pearson": 0.852
+ },
+ "metrics_vs_human": {
+  "intent_resolution": {
+   "n": 47,
+   "pass_fail_agreement": 0.936,
+   "mae": 0.36,
+   "pearson": 0.948
+  },
+  "task_adherence": {
+   "n": 47,
+   "pass_fail_agreement": 0.702,
+   "mae": 0.75,
+   "pearson": 0.729
+  },
+  "tool_call_accuracy": {
+   "n": 32,
+   "pass_fail_agreement": 0.812,
+   "mae": 0.81,
+   "pearson": 0.795
+  },
+  "groundedness": {
+   "n": 38,
+   "pass_fail_agreement": 0.974,
+   "mae": 0.45,
+   "pearson": 0.934
+  }
+ },
+ "latency_ms_per_conversation": {
+  "p50": 3008,
+  "p95": 4065
+ },
+ "limits": "One run. Questions and weights were tuned on Jev, not re-tuned for pplx-decider. Single A100 replica."
+}

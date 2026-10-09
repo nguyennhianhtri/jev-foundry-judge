@@ -1,0 +1,472 @@
+[
+ {
+  "id": "sup-01",
+  "ms": 4040,
+  "scores": {
+   "intent_resolution": 4.93,
+   "task_adherence": 4.95,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 4.15
+  }
+ },
+ {
+  "id": "sup-02",
+  "ms": 3888,
+  "scores": {
+   "intent_resolution": 4.64,
+   "task_adherence": 1.87,
+   "tool_call_accuracy": 2.0,
+   "groundedness": 4.94
+  }
+ },
+ {
+  "id": "sup-03",
+  "ms": 2829,
+  "scores": {
+   "intent_resolution": 4.54,
+   "task_adherence": 2.68,
+   "tool_call_accuracy": 2.0,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "sup-04",
+  "ms": 3559,
+  "scores": {
+   "intent_resolution": 4.76,
+   "task_adherence": 2.0,
+   "tool_call_accuracy": 3.71,
+   "groundedness": 4.91
+  }
+ },
+ {
+  "id": "sup-05",
+  "ms": 4155,
+  "scores": {
+   "intent_resolution": 4.73,
+   "task_adherence": 4.94,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 4.26
+  }
+ },
+ {
+  "id": "sup-06",
+  "ms": 2844,
+  "scores": {
+   "intent_resolution": 2.88,
+   "task_adherence": 1.64,
+   "tool_call_accuracy": 3.84,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "sup-07",
+  "ms": 3471,
+  "scores": {
+   "intent_resolution": 2.33,
+   "task_adherence": 2.86,
+   "tool_call_accuracy": 2.0,
+   "groundedness": 3.97
+  }
+ },
+ {
+  "id": "sup-08",
+  "ms": 4034,
+  "scores": {
+   "intent_resolution": 4.94,
+   "task_adherence": 4.82,
+   "tool_call_accuracy": 3.96,
+   "groundedness": 4.99
+  }
+ },
+ {
+  "id": "rag-01",
+  "ms": 2056,
+  "scores": {
+   "intent_resolution": 4.98,
+   "task_adherence": 4.97,
+   "tool_call_accuracy": null,
+   "groundedness": 5.0
+  }
+ },
+ {
+  "id": "rag-02",
+  "ms": 1960,
+  "scores": {
+   "intent_resolution": 2.58,
+   "task_adherence": 1.94,
+   "tool_call_accuracy": null,
+   "groundedness": 1.06
+  }
+ },
+ {
+  "id": "rag-03",
+  "ms": 2030,
+  "scores": {
+   "intent_resolution": 4.75,
+   "task_adherence": 4.77,
+   "tool_call_accuracy": null,
+   "groundedness": 4.99
+  }
+ },
+ {
+  "id": "rag-04",
+  "ms": 2014,
+  "scores": {
+   "intent_resolution": 2.68,
+   "task_adherence": 1.57,
+   "tool_call_accuracy": null,
+   "groundedness": 1.14
+  }
+ },
+ {
+  "id": "rag-05",
+  "ms": 1997,
+  "scores": {
+   "intent_resolution": 4.35,
+   "task_adherence": 4.97,
+   "tool_call_accuracy": null,
+   "groundedness": 4.97
+  }
+ },
+ {
+  "id": "rag-06",
+  "ms": 1963,
+  "scores": {
+   "intent_resolution": 2.72,
+   "task_adherence": 2.0,
+   "tool_call_accuracy": null,
+   "groundedness": 1.13
+  }
+ },
+ {
+  "id": "rag-07",
+  "ms": 2036,
+  "scores": {
+   "intent_resolution": 4.94,
+   "task_adherence": 4.95,
+   "tool_call_accuracy": null,
+   "groundedness": 4.97
+  }
+ },
+ {
+  "id": "trv-01",
+  "ms": 3584,
+  "scores": {
+   "intent_resolution": 4.84,
+   "task_adherence": 4.92,
+   "tool_call_accuracy": 4.77,
+   "groundedness": 4.98
+  }
+ },
+ {
+  "id": "trv-02",
+  "ms": 3395,
+  "scores": {
+   "intent_resolution": 3.26,
+   "task_adherence": 1.94,
+   "tool_call_accuracy": 3.78,
+   "groundedness": 4.98
+  }
+ },
+ {
+  "id": "trv-03",
+  "ms": 3277,
+  "scores": {
+   "intent_resolution": 1.51,
+   "task_adherence": 3.11,
+   "tool_call_accuracy": 2.0,
+   "groundedness": 4.66
+  }
+ },
+ {
+  "id": "trv-04",
+  "ms": 3285,
+  "scores": {
+   "intent_resolution": 3.08,
+   "task_adherence": 3.45,
+   "tool_call_accuracy": 4.7,
+   "groundedness": 1.77
+  }
+ },
+ {
+  "id": "trv-05",
+  "ms": 3494,
+  "scores": {
+   "intent_resolution": 4.86,
+   "task_adherence": 4.94,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 4.96
+  }
+ },
+ {
+  "id": "trv-06",
+  "ms": 2396,
+  "scores": {
+   "intent_resolution": 4.51,
+   "task_adherence": 4.93,
+   "tool_call_accuracy": 4.4,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "sup-01~drop_tool_calls",
+  "ms": 2994,
+  "scores": {
+   "intent_resolution": 4.81,
+   "task_adherence": 3.14,
+   "tool_call_accuracy": 3.26,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "sup-01~corrupt_argument",
+  "ms": 4024,
+  "scores": {
+   "intent_resolution": 4.89,
+   "task_adherence": 3.94,
+   "tool_call_accuracy": 2.0,
+   "groundedness": 4.26
+  }
+ },
+ {
+  "id": "sup-01~inject_unsupported_claim",
+  "ms": 4117,
+  "scores": {
+   "intent_resolution": 4.88,
+   "task_adherence": 4.27,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "sup-01~off_topic_answer",
+  "ms": 4184,
+  "scores": {
+   "intent_resolution": 1.16,
+   "task_adherence": 3.49,
+   "tool_call_accuracy": 4.98,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "sup-05~drop_tool_calls",
+  "ms": 3008,
+  "scores": {
+   "intent_resolution": 4.62,
+   "task_adherence": 3.21,
+   "tool_call_accuracy": 3.07,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "sup-05~corrupt_argument",
+  "ms": 3987,
+  "scores": {
+   "intent_resolution": 4.67,
+   "task_adherence": 3.97,
+   "tool_call_accuracy": 2.0,
+   "groundedness": 4.27
+  }
+ },
+ {
+  "id": "sup-05~inject_unsupported_claim",
+  "ms": 4065,
+  "scores": {
+   "intent_resolution": 4.61,
+   "task_adherence": 3.97,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "sup-05~off_topic_answer",
+  "ms": 4032,
+  "scores": {
+   "intent_resolution": 1.13,
+   "task_adherence": 3.44,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "rag-01~inject_unsupported_claim",
+  "ms": 2025,
+  "scores": {
+   "intent_resolution": 4.27,
+   "task_adherence": 1.96,
+   "tool_call_accuracy": null,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "rag-01~off_topic_answer",
+  "ms": 2054,
+  "scores": {
+   "intent_resolution": 1.01,
+   "task_adherence": 1.41,
+   "tool_call_accuracy": null,
+   "groundedness": 1.87
+  }
+ },
+ {
+  "id": "rag-03~inject_unsupported_claim",
+  "ms": 2102,
+  "scores": {
+   "intent_resolution": 4.08,
+   "task_adherence": 1.81,
+   "tool_call_accuracy": null,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "rag-03~off_topic_answer",
+  "ms": 2063,
+  "scores": {
+   "intent_resolution": 1.02,
+   "task_adherence": 1.5,
+   "tool_call_accuracy": null,
+   "groundedness": 1.8
+  }
+ },
+ {
+  "id": "rag-05~inject_unsupported_claim",
+  "ms": 2048,
+  "scores": {
+   "intent_resolution": 3.51,
+   "task_adherence": 2.0,
+   "tool_call_accuracy": null,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "rag-05~off_topic_answer",
+  "ms": 2067,
+  "scores": {
+   "intent_resolution": 1.02,
+   "task_adherence": 1.55,
+   "tool_call_accuracy": null,
+   "groundedness": 1.85
+  }
+ },
+ {
+  "id": "rag-07~inject_unsupported_claim",
+  "ms": 2152,
+  "scores": {
+   "intent_resolution": 4.24,
+   "task_adherence": 2.0,
+   "tool_call_accuracy": null,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "rag-07~off_topic_answer",
+  "ms": 2014,
+  "scores": {
+   "intent_resolution": 1.02,
+   "task_adherence": 1.46,
+   "tool_call_accuracy": null,
+   "groundedness": 1.86
+  }
+ },
+ {
+  "id": "trv-01~drop_tool_calls",
+  "ms": 2667,
+  "scores": {
+   "intent_resolution": 4.77,
+   "task_adherence": 4.45,
+   "tool_call_accuracy": 4.38,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "trv-01~corrupt_argument",
+  "ms": 3617,
+  "scores": {
+   "intent_resolution": 4.6,
+   "task_adherence": 4.53,
+   "tool_call_accuracy": 2.0,
+   "groundedness": 4.95
+  }
+ },
+ {
+  "id": "trv-01~inject_unsupported_claim",
+  "ms": 3799,
+  "scores": {
+   "intent_resolution": 4.57,
+   "task_adherence": 3.81,
+   "tool_call_accuracy": 4.68,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "trv-01~off_topic_answer",
+  "ms": 3484,
+  "scores": {
+   "intent_resolution": 1.03,
+   "task_adherence": 2.57,
+   "tool_call_accuracy": 4.65,
+   "groundedness": 1.49
+  }
+ },
+ {
+  "id": "trv-05~drop_tool_calls",
+  "ms": 2783,
+  "scores": {
+   "intent_resolution": 4.85,
+   "task_adherence": 4.32,
+   "tool_call_accuracy": 4.47,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "trv-05~corrupt_argument",
+  "ms": 3847,
+  "scores": {
+   "intent_resolution": 3.88,
+   "task_adherence": 2.7,
+   "tool_call_accuracy": 2.0,
+   "groundedness": 2.72
+  }
+ },
+ {
+  "id": "trv-05~inject_unsupported_claim",
+  "ms": 3795,
+  "scores": {
+   "intent_resolution": 4.58,
+   "task_adherence": 3.79,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 2.0
+  }
+ },
+ {
+  "id": "trv-05~off_topic_answer",
+  "ms": 3814,
+  "scores": {
+   "intent_resolution": 1.11,
+   "task_adherence": 3.39,
+   "tool_call_accuracy": 4.99,
+   "groundedness": 1.63
+  }
+ },
+ {
+  "id": "trv-06~inject_unsupported_claim",
+  "ms": 2469,
+  "scores": {
+   "intent_resolution": 3.98,
+   "task_adherence": 3.78,
+   "tool_call_accuracy": 4.17,
+   "groundedness": null
+  }
+ },
+ {
+  "id": "trv-06~off_topic_answer",
+  "ms": 2599,
+  "scores": {
+   "intent_resolution": 1.02,
+   "task_adherence": 2.34,
+   "tool_call_accuracy": 2.0,
+   "groundedness": null
+  }
+ }
+]

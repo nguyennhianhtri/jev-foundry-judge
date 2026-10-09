@@ -13,9 +13,13 @@ from jev_foundry_judge import router as jr  # noqa: E402
 M = jr.DEFAULT_MODELS; K = [m["key"] for m in M]; PR = {m["key"]: m for m in M}; TIN, TOUT = 500, 400
 cost = lambda k: (TIN * PR[k]["in"] + TOUT * PR[k]["out"]) / 1e6
 VM_USD_PER_HOUR = 0.726  # Standard_D16as_v7, East US 2, Linux pay-as-you-go retail price (prices.azure.com, Oct 2026)
+# Container Apps serverless A100: GPU meter only ($0.000651/s, azure.microsoft.com pricing, Oct 2026). vCPU and memory meters are extra,
+# so this is a lower bound.
+A100_GPU_USD_PER_HOUR = 0.000651 * 3600
 RUNS = {
     "clef_flash": ("clef_raw.csv", "Clef-flash (Cloudflare, 9B, Apache-2.0), CPU"),
     "clm_8b": ("clm_raw_str.csv", "CLM-8B (Qwen3-8B Q8 GGUF), CPU"),
+    "pplx_decider": ("pplx_decider_raw.csv", "pplx-decider-v1.1-27b (Perplexity, 27B, Apache-2.0), A100 80GB"),
 }
 
 
@@ -39,7 +43,7 @@ def score(key, rows, preds, label):
             "saving_vs_strong": round(1 - sum(cost(p) for p in preds) / (n * cost("strong")), 4),
             "latency_p50_ms": round(q(ms, .5), 1), "latency_p95_ms": round(q(ms, .95), 1),
             # one sequential request at a time on one VM: cost of the VM-seconds each route occupied
-            "usd_per_1k_routes_vm_time": round(1000 * (sum(ms) / n / 1000) * VM_USD_PER_HOUR / 3600, 4)}
+            "usd_per_1k_routes_vm_time": round(1000 * (sum(ms) / n / 1000) * (A100_GPU_USD_PER_HOUR if key.startswith("pplx") else VM_USD_PER_HOUR) / 3600, 4)}
 
 
 out = []
@@ -51,7 +55,7 @@ for key, (fn, label) in RUNS.items():
     out.append(score(key + "_pol", rows, pol, label + " + policy (conf<0.6 → strong)"))
 
 res = {"version": "router-bench-1/open-models", "dataset_sha256": json.load(open(os.path.join(HERE, "..", "labels.lock")))["sha256"],
-       "hardware": "Azure Standard_D16as_v7 (16 vCPU AMD EPYC 9V45, 64 GB RAM, no GPU), East US 2; PyTorch 2.13 CPU, transformers 5.17",
+       "hardware": "Clef-flash and CLM-8B: Azure Standard_D16as_v7 (16 vCPU, 64 GB, no GPU), East US 2. pplx-decider: Container Apps serverless NVIDIA A100 80GB, Sweden Central, called over HTTPS (latency includes the network hop)",
        "method": "Same 240 frozen prompts, labels, model cards and instruction as the Jev run; zero-shot, one request at a time, latency measured on the VM (no network hop).",
        "vm_usd_per_hour": VM_USD_PER_HOUR, "routers": out,
        "limits": "One run, n=240 (±~5 pts at 95%). CPU latency is the reference PyTorch path without fused kernels; a GPU is ~10-50x faster. "

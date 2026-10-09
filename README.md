@@ -33,7 +33,7 @@ The steps, policies and measurements are in [`docs/apim-router.md`](docs/apim-ro
 ```bash
 JEV_URL=http://<vm-private-ip>:8700/v1/systemone JEV_MODEL=<model> PYTHONPATH=src uvicorn main:app --app-dir app --port 8080
 ```
-Use Clef-flash for this. CLM-8B was tested and is not good enough for routing (see below).
+Use Clef-flash (CPU) or pplx-decider-v1.1-27b (one 80 GB GPU, [deploy script](selfhost/pplx-decider/README.md)) for this. CLM-8B was tested and is not good enough for routing (see below).
 
 ![Architecture](docs/architecture.png)
 

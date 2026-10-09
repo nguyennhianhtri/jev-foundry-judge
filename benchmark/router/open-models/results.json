@@ -1,7 +1,7 @@
 {
  "version": "router-bench-1/open-models",
  "dataset_sha256": "7e99de1e3d60a3ff03381782d9b61ab376fd3735db3d50843962a19d478498d0",
- "hardware": "Azure Standard_D16as_v7 (16 vCPU AMD EPYC 9V45, 64 GB RAM, no GPU), East US 2; PyTorch 2.13 CPU, transformers 5.17",
+ "hardware": "Clef-flash and CLM-8B: Azure Standard_D16as_v7 (16 vCPU, 64 GB, no GPU), East US 2. pplx-decider: Container Apps serverless NVIDIA A100 80GB, Sweden Central, called over HTTPS (latency includes the network hop)",
  "method": "Same 240 frozen prompts, labels, model cards and instruction as the Jev run; zero-shot, one request at a time, latency measured on the VM (no network hop).",
  "vm_usd_per_hour": 0.726,
  "routers": [
@@ -120,6 +120,64 @@
    "latency_p50_ms": 1140.1,
    "latency_p95_ms": 3450.7,
    "usd_per_1k_routes_vm_time": 0.2936
+  },
+  {
+   "key": "pplx_decider",
+   "label": "pplx-decider-v1.1-27b (Perplexity, 27B, Apache-2.0), A100 80GB",
+   "n": 240,
+   "accuracy": 0.9583,
+   "macro_f1": 0.9583,
+   "confusion": {
+    "small": {
+     "small": 75,
+     "strong": 5,
+     "code": 0
+    },
+    "strong": {
+     "small": 5,
+     "strong": 75,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 0,
+     "code": 80
+    }
+   },
+   "quality_risk": 0.0312,
+   "saving_vs_strong": 0.3414,
+   "latency_p50_ms": 740.3,
+   "latency_p95_ms": 966.8,
+   "usd_per_1k_routes_vm_time": 0.5047
+  },
+  {
+   "key": "pplx_decider_pol",
+   "label": "pplx-decider-v1.1-27b (Perplexity, 27B, Apache-2.0), A100 80GB + policy (conf<0.6 \u2192 strong)",
+   "n": 240,
+   "accuracy": 0.9458,
+   "macro_f1": 0.9456,
+   "confusion": {
+    "small": {
+     "small": 68,
+     "strong": 12,
+     "code": 0
+    },
+    "strong": {
+     "small": 1,
+     "strong": 79,
+     "code": 0
+    },
+    "code": {
+     "small": 0,
+     "strong": 0,
+     "code": 80
+    }
+   },
+   "quality_risk": 0.0063,
+   "saving_vs_strong": 0.2993,
+   "latency_p50_ms": 740.3,
+   "latency_p95_ms": 966.8,
+   "usd_per_1k_routes_vm_time": 0.5047
   }
  ],
  "limits": "One run, n=240 (\u00b1~5 pts at 95%). CPU latency is the reference PyTorch path without fused kernels; a GPU is ~10-50x faster. Cost per route assumes one sequential request at a time on an always-on VM; idle time is not counted."
