@@ -1,6 +1,6 @@
 # Self-hosting an open-weight decision model
 
-Two options: [Clef-flash](#clef-flash-cpu-9b) (9B, runs on a CPU VM) and [pplx-decider-v1.1-27b](pplx-decider/README.md) (27B, needs one 80 GB GPU; deploy script included). The pplx-decider run used a single Azure Container Apps serverless A100 80GB, and it is the most accurate open model we measured on both benchmarks below.
+Managed option: [Microsoft-Decision-1 on Foundry](foundry-decision/README.md) (no hosting, Entra ID). Self-hosted options: [Clef-flash](#clef-flash-cpu-9b) (9B, runs on a CPU VM) and [pplx-decider-v1.1-27b](pplx-decider/README.md) (27B, needs one 80 GB GPU; deploy script included). The pplx-decider run used a single Azure Container Apps serverless A100 80GB, and it is the most accurate open model we measured on both benchmarks below.
 
 The judge and the router talk to Jev through one HTTP call: `POST /v1/systemone`. Open-weight decision models now expose the same API, so you can run the whole pattern inside your own Azure subscription. No third-party key is needed and no data leaves the tenant.
 
@@ -17,6 +17,7 @@ All numbers come from one run on an Azure `Standard_D16as_v7` (16 vCPU, 64 GB RA
 | Jev (hosted API) | 86% | 46% | 279 ms | $0.023 |
 | Jev + fallback | 94% | 37% | 279 ms | $0.023 |
 | **Clef-flash, self-hosted CPU VM** | **95%** | 29% | 2.3 s | $0.50 (VM time) |
+| **Microsoft-Decision-1 (Foundry) + fallback** | **96%** | 36% | 1.1 s (over HTTPS) | $0.023 (per-token price) |
 | **pplx-decider-v1.1-27b, self-hosted A100** | **96%** | 34% | 0.74 s (over HTTPS) | $0.50 (GPU time only) |
 | CLM-8B, self-hosted CPU VM | 46% | n/a | 1.1 s | $0.29 (VM time) |
 | LLM router (gpt-5.4-mini) | 80% | 51% | 1.5 s | $0.475 |
@@ -28,6 +29,7 @@ Clef-flash made no "hard prompt sent to the small model" mistakes (0 of 160). It
 | Judge | Agreement with human labels | MAE | Pearson r | p50 per conversation |
 |---|---|---|---|---|
 | Jev (hosted API) | 86% | 0.66 | 0.84 | 0.3 s |
+| **Microsoft-Decision-1 (Foundry)** | **82%** | 0.73 | 0.82 | 1.2 s |
 | **pplx-decider-v1.1-27b, self-hosted A100** | **85%** | 0.58 | 0.85 | 3.0 s |
 | **Clef-flash, self-hosted CPU VM** | **82%** | 0.88 | 0.71 | 16.7 s |
 | Foundry built-in LLM judge (gpt-5.4-mini) | 72% | 1.24 | 0.49 | ~6.4 s |

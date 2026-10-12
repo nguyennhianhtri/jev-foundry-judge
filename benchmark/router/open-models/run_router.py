@@ -10,9 +10,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 name = sys.argv[1]
 rows = [json.loads(l) for l in open(os.path.join(HERE, "..", "dataset.jsonl"))]
 client = JevClient(os.environ["JEV_API_KEY"], timeout=120)
+PACE = float(os.environ.get("BENCH_PACE_S", "0"))  # seconds between requests (Foundry preview quota is about 50 requests per minute)
 out = csv.writer(open(os.path.join(HERE, f"{name}_raw.csv"), "w", newline=""))
 out.writerow(["id", "label", "pred", "p_small", "p_strong", "p_code", "conf", "ms"])
 for r in rows:
+    time.sleep(PACE)
     t0 = time.time()
     d = jr.route(client, r["prompt"], jr.DEFAULT_MODELS)
     ms = (time.time() - t0) * 1000

@@ -35,26 +35,58 @@ class JevResult:
         self.usd = self.input_tokens * JEV_USD_PER_MTOK_INPUT / 1_000_000
 
 
+_FOUNDRY_SCOPE = "https://cognitiveservices.azure.com/.default"
+_entra_cache: dict = {"token": None, "exp": 0.0}
+
+
+def _entra_token() -> str:
+    """Entra ID token for a Foundry resource (az login, managed identity, or env credentials). Cached until near expiry."""
+    if _entra_cache["token"] and time.time() < _entra_cache["exp"] - 120:
+        return _entra_cache["token"]
+    from azure.identity import DefaultAzureCredential  # optional dependency: pip install azure-identity
+
+    tok = DefaultAzureCredential().get_token(_FOUNDRY_SCOPE)
+    _entra_cache.update(token=tok.token, exp=float(tok.expires_on))
+    return tok.token
+
+
 class JevClient:
+    """Client for any System One decision endpoint: TypeSafe Jev, Microsoft-Decision-1 on Foundry, or a self-hosted model.
+
+    Auth: an API key (sent as a Bearer token, or as an ``api-key`` header for Azure endpoints), or, for Microsoft
+    Foundry, pass ``api_key="entra"`` to use Microsoft Entra ID (no key to store).
+    """
+
     def __init__(self, api_key: str, model: str = JEV_MODEL, timeout: float = 60, url: str = JEV_URL):
         if not api_key or not api_key.strip():
-            raise ValueError("A Jev API key is required")
+            raise ValueError("A Jev API key is required (use 'entra' for Microsoft Foundry with Entra ID)")
         self._key = api_key.strip()
         self.model = model
+        self._models = [m.strip() for m in model.split(",") if m.strip()] or [model]
+        self._turn = 0
         self.timeout = timeout
         self.url = url
+
+    def _auth_headers(self) -> dict:
+        if self._key.lower() == "entra":
+            return {"Authorization": f"Bearer {_entra_token()}"}
+        if ".azure.com" in self.url or ".azure.net" in self.url:
+            return {"api-key": self._key}
+        return {"Authorization": f"Bearer {self._key}"}
 
     def __repr__(self) -> str:  # never leak the key
         return f"JevClient(model={self.model!r})"
 
     def ask(self, state, questions: dict) -> JevResult:
-        body = json.dumps({"state": state, "model": self.model, "questions": questions}).encode()
-        req = urllib.request.Request(
-            self.url, body,
-            {"Authorization": f"Bearer {self._key}", "Content-Type": "application/json",
-             "User-Agent": "jev-foundry-judge/1.0"})
+        # JEV_MODEL may list several deployment names ("a,b"); requests rotate across them to add up their rate limits.
+        model = self._models[self._turn % len(self._models)]
+        self._turn += 1
+        body = json.dumps({"state": state, "model": model, "questions": questions}).encode()
         last: Exception | None = None
-        for attempt in range(4):
+        for attempt in range(6):
+            req = urllib.request.Request(
+                self.url, body,
+                {**self._auth_headers(), "Content-Type": "application/json", "User-Agent": "jev-foundry-judge/1.0"})
             t0 = time.perf_counter()
             try:
                 with urllib.request.urlopen(req, timeout=self.timeout) as r:
@@ -70,10 +102,14 @@ class JevClient:
                 except Exception:
                     pass
                 last = JevError(e.code, msg or e.reason)
-                if e.code not in (429, 500, 502, 503, 504):
+                if e.code not in (429, 500, 502, 503, 504, 529):
                     raise last
                 ra = e.headers.get("retry-after") if e.headers else None
-                time.sleep(float(ra) if ra and ra.replace(".", "").isdigit() else 0.5 * 2 ** attempt)
+                ra_ms = e.headers.get("retry-after-ms") if e.headers else None
+                if ra_ms and ra_ms.isdigit():
+                    time.sleep(min(float(ra_ms) / 1000, 60) + 0.1)  # Foundry quota: wait exactly as long as it asks
+                else:
+                    time.sleep(float(ra) if ra and ra.replace(".", "").isdigit() else 0.5 * 2 ** attempt)
             except urllib.error.URLError as e:
                 last = JevError(0, str(e.reason))
                 time.sleep(0.5 * 2 ** attempt)

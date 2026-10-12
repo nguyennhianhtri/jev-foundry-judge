@@ -11,8 +11,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 name = sys.argv[1]
 rows = [json.loads(l) for l in open(os.path.join(HERE, "..", "dataset.jsonl"))]
 judge = JevAgentJudge(os.environ["JEV_API_KEY"])
+PACE = float(os.environ.get("BENCH_PACE_S", "0"))  # seconds between conversations (rate-limited endpoints)
 out = []
 for r in rows:
+    time.sleep(PACE)
     t0 = time.time()
     try:
         res = judge(query=r["query"], response=r["response"], tool_definitions=r.get("tool_definitions"),

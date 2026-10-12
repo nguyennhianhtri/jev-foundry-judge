@@ -1,0 +1,41 @@
+{
+ "judge": "Microsoft-Decision-1 (Microsoft Foundry, Qwen3.5-9B base) via the Foundry systemone endpoint, same JevAgentJudge questions and weights",
+ "rows": 47,
+ "overall_vs_human": {
+  "n": 164,
+  "pass_fail_agreement": 0.817,
+  "mae": 0.73,
+  "pearson": 0.816
+ },
+ "metrics_vs_human": {
+  "intent_resolution": {
+   "n": 47,
+   "pass_fail_agreement": 0.83,
+   "mae": 0.65,
+   "pearson": 0.879
+  },
+  "task_adherence": {
+   "n": 47,
+   "pass_fail_agreement": 0.723,
+   "mae": 0.83,
+   "pearson": 0.725
+  },
+  "tool_call_accuracy": {
+   "n": 32,
+   "pass_fail_agreement": 0.812,
+   "mae": 0.84,
+   "pearson": 0.808
+  },
+  "groundedness": {
+   "n": 38,
+   "pass_fail_agreement": 0.921,
+   "mae": 0.62,
+   "pearson": 0.857
+  }
+ },
+ "latency_ms_per_conversation": {
+  "p50": 1236,
+  "p95": 1422
+ },
+ "limits": "One run. Questions and weights were tuned on Jev. Latency includes the Foundry gateway round trip over HTTPS."
+}
